@@ -484,13 +484,15 @@
   }
   function formatMoney(val) { return (val >= 0 ? '+' : '') + val.toFixed(2); }
 
-  /* 通过 GitHub Actions 生成的 JSON 判断净值是否已更新 */
+  /* 通过 allorigins.win 代理获取东方财富官方净值日期，判断是否已更新 */
   async function isNetValueUpdated(code) {
     try {
-      const resp = await fetch('./netvalue_status.json?t=' + Date.now());
+      const targetUrl = `https://capsule-tau.vercel.app/api/netvalue?code=${code}`;
+      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+      const resp = await fetch(proxyUrl);
       if (!resp.ok) return false;
-      const status = await resp.json();
-      return status[code] === true;
+      const data = await resp.json();
+      return data.updated === true;
     } catch (e) {
       return false;
     }
