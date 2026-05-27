@@ -484,17 +484,17 @@
   }
   function formatMoney(val) { return (val >= 0 ? '+' : '') + val.toFixed(2); }
 
-  /* 通过 allorigins.win 代理获取东方财富官方净值日期，判断是否已更新 */
-  async function isNetValueUpdated(code) {
+  /* 通过 allorigins.win 代理获取东方财富官方净值日期和涨跌幅 */
+  async function fetchOfficialData(code) {
     try {
       const targetUrl = `https://capsule-tau.vercel.app/api/netvalue?code=${code}`;
       const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
       const resp = await fetch(proxyUrl);
-      if (!resp.ok) return false;
+      if (!resp.ok) return null;
       const data = await resp.json();
-      return data.updated === true;
+      return data;
     } catch (e) {
-      return false;
+      return null;
     }
   }
 
@@ -751,9 +751,22 @@
         const h = holdings[code];
         const d = fundDataCache[code] || {};
         const name = d.name || h.name || code;
-        const gsz = parseFloat(d.gsz) || 0;
-        const dwjz = parseFloat(d.dwjz) || 0;
-        const gszzl = parseFloat(d.gszzl) || 0;
+
+        // 获取官方数据（包含净值和涨跌幅）
+        const officialData = await fetchOfficialData(code);
+
+        // 优先使用官方净值，否则使用估算数据
+        let gsz, dwjz, gszzl;
+        if (officialData && officialData.updated && !isNaN(officialData.officialNetValue)) {
+            gsz = officialData.officialNetValue;
+            dwjz = parseFloat(d.dwjz) || 0;
+            gszzl = officialData.officialChange;
+        } else {
+            gsz = parseFloat(d.gsz) || 0;
+            dwjz = parseFloat(d.dwjz) || 0;
+            gszzl = parseFloat(d.gszzl) || 0;
+        }
+
         const cost = parseFloat(h.cost) || 0;
         const shares = parseFloat(h.shares) || 0;
         const currentVal = gsz * shares;
@@ -763,7 +776,7 @@
         const totalYieldRate = cost ? ((gsz - cost) / cost * 100) : 0;
         const cls = gszzl > 0 ? 'up' : gszzl < 0 ? 'down' : 'zero';
         const profitClass = (v) => v >= 0 ? 'profit-positive' : 'profit-negative';
-        const updated = await isNetValueUpdated(code);
+        const updated = (officialData && officialData.updated) || false;
         totalAsset += currentVal; todayProfitSum += dayProfit; totalProfitSum += totalP;
         html += `<div class="holding-card ${cls}" data-code="${code}">
           <div class="holding-header">

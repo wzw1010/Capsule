@@ -21,9 +21,14 @@ export default async function handler(req, res) {
     if (data?.ErrCode === 0 && data?.Data?.LSJZList?.length > 0) {
       const latest = data.Data.LSJZList[0];
       const todayStr = new Date().toISOString().substring(0, 10);
+      const isUpdated = (latest.FSRQ === todayStr);
+      
+      // 返回官方净值、涨跌幅以及是否更新
       res.json({
         code,
-        updated: latest.FSRQ === todayStr
+        updated: isUpdated,
+        officialNetValue: parseFloat(latest.DWJZ),
+        officialChange: parseFloat(latest.JZZZL)
       });
     } else {
       res.json({ code, updated: false });
