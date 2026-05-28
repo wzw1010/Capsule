@@ -1,1240 +1,1099 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Capsule · 基金跟踪</title>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="apple-touch-icon" href="icon-180.png">
-    <style>
-        :root {
-            --bg-primary: #0d0d11;
-            --bg-header: #12121a;
-            --bg-card: #181820;
-            --bg-summary: #141418;
-            --border-subtle: rgba(255,255,255,0.05);
-            --border-glow: rgba(255,255,255,0.10);
-            --text-primary: #e8eaef;
-            --text-secondary: #8b8f9a;
-            --text-tertiary: #5c606d;
-            --accent: #00CECA;
-            --accent-soft: rgba(0,206,202,0.18);
-            --accent-glow: rgba(0,206,202,0.35);
-            --up-color: #f26363;
-            --up-bg: rgba(242,99,99,0.12);
-            --down-color: #4dcb7f;
-            --down-bg: rgba(77,203,127,0.12);
-            --delete-gradient: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
-            --card-radius-sm: 18px;
-            --card-radius-md: 20px;
-            --card-radius-lg: 24px;
-            --safe-bottom: env(safe-area-inset-bottom, 16px);
-            --safe-top: env(safe-area-inset-top, 0px);
-            --delete-width: 80px;
-            --nav-height: 56px;
-            color-scheme: dark;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Capsule · 基金跟踪</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <style>
+    :root {
+      --bg-primary: #0d0d11;
+      --bg-header: #12121a;
+      --bg-card: #181820;
+      --bg-summary: #141418;
+      --border-subtle: rgba(255,255,255,0.05);
+      --border-glow: rgba(255,255,255,0.10);
+      --text-primary: #e8eaef;
+      --text-secondary: #8b8f9a;
+      --text-tertiary: #5c606d;
+      --accent: #00CECA;
+      --accent-soft: rgba(0,206,202,0.18);
+      --accent-glow: rgba(0,206,202,0.35);
+      --up-color: #f26363;
+      --up-bg: rgba(242,99,99,0.12);
+      --down-color: #4dcb7f;
+      --down-bg: rgba(77,203,127,0.12);
+      --delete-gradient: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+      /* 统一圆角 */
+      --card-radius-sm: 18px;
+      --card-radius-md: 20px;
+      --card-radius-lg: 24px;
+      --safe-bottom: env(safe-area-inset-bottom, 16px);
+      --safe-top: env(safe-area-inset-top, 0px);
+      --delete-width: 80px;
+      --nav-height: 56px;
+      color-scheme: dark;
+    }
 
-        * { margin:0; padding:0; box-sizing:border-box; }
-        html { font-size:16px; -webkit-tap-highlight-color:transparent; height:100%; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { font-size:16px; -webkit-tap-highlight-color:transparent; height:100%; }
 
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100dvh;
-            padding-top: var(--safe-top);
-            padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px);
-            overflow-x: hidden;
-            user-select: none;
-            -webkit-user-select: none;
-        }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100dvh;
+      padding-top: var(--safe-top);
+      padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px);
+      overflow-x: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+    }
 
-        .app-container { max-width: 520px; margin: 0 auto; padding: 0 14px; }
+    .app-container { max-width: 520px; margin: 0 auto; padding: 0 14px; }
 
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 100%; max-width: 520px;
-            background: var(--bg-primary);
-            display: flex; justify-content: space-around; align-items: center;
-            height: var(--nav-height);
-            padding-bottom: var(--safe-bottom);
-            z-index: 50;
-        }
-        .nav-item {
-            display: flex; align-items: center; justify-content: center;
-            width: 48px; height: 40px; border-radius: 14px;
-            color: var(--text-tertiary); transition: 0.2s; cursor: pointer;
-        }
-        .nav-item.active {
-            color: var(--accent);
-            box-shadow: 0 0 14px rgba(0,206,202,0.18);
-        }
-        .nav-item svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 520px;
+      background: var(--bg-primary);
+      display: flex; justify-content: space-around; align-items: center;
+      height: var(--nav-height);
+      padding-bottom: var(--safe-bottom);
+      z-index: 50;
+    }
+    .nav-item {
+      display: flex; align-items: center; justify-content: center;
+      width: 48px; height: 40px; border-radius: 14px;
+      color: var(--text-tertiary); transition: 0.2s; cursor: pointer;
+    }
+    .nav-item.active {
+      color: var(--accent);
+      box-shadow: 0 0 14px rgba(0,206,202,0.18);
+    }
+    .nav-item svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-        .page { display: none; }
-        .page.active { display: block; }
+    .page { display: none; }
+    .page.active { display: block; }
 
-        .header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 12px 2px 8px;
-            position: sticky; top: var(--safe-top); z-index: 10;
-            background: var(--bg-header); backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            margin-left: -14px; margin-right: -14px;
-            padding-left: 16px; padding-right: 16px;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-        .header-title-group { display: flex; align-items: center; gap: 10px; }
-        .header-icon {
-            width: 38px; height: 38px; border-radius: 14px;
-            background: var(--accent-soft); border: 1px solid var(--accent-glow);
-            display: flex; align-items: center; justify-content: center;
-            position: relative; overflow: hidden; transition: transform 0.2s;
-        }
-        .holdings-header-icon {
-            background: rgba(242,99,99,0.15);
-            border-color: rgba(242,99,99,0.35);
-        }
-        .header-icon:active { transform: scale(0.92); }
-        .header-icon.glow::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.15) 45%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.15) 55%, transparent 60%);
-            animation: iconShine 2s ease-in-out; pointer-events: none;
-        }
-        @keyframes iconShine { 0%{ left:-100%; } 100%{ left:100%; } }
-        .header-icon svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; position: relative; z-index: 1; }
-        .header-title { font-size: 1.1rem; font-weight: 700; }
-        .header-subtitle { display: flex; align-items: center; gap: 6px; font-size: 0.6rem; color: var(--text-tertiary); }
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 2px 8px;
+      position: sticky; top: var(--safe-top); z-index: 10;
+      background: var(--bg-header); backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      margin-left: -14px; margin-right: -14px;
+      padding-left: 16px; padding-right: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .header-title-group { display: flex; align-items: center; gap: 10px; }
+    .header-icon {
+      width: 38px; height: 38px; border-radius: 14px;
+      background: var(--accent-soft); border: 1px solid var(--accent-glow);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden; transition: transform 0.2s;
+    }
+    .holdings-header-icon {
+      background: rgba(242,99,99,0.15);
+      border-color: rgba(242,99,99,0.35);
+    }
+    .header-icon:active { transform: scale(0.92); }
+    .header-icon.glow::after {
+      content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.15) 45%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.15) 55%, transparent 60%);
+      animation: iconShine 2s ease-in-out; pointer-events: none;
+    }
+    @keyframes iconShine { 0%{ left:-100%; } 100%{ left:100%; } }
+    .header-icon svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; position: relative; z-index: 1; }
+    .header-title { font-size: 1.1rem; font-weight: 700; }
+    .header-subtitle { display: flex; align-items: center; gap: 6px; font-size: 0.6rem; color: var(--text-tertiary); }
 
-        .header-actions { display: flex; gap: 6px; align-items: center; }
-        .btn-icon {
-            width: 36px; height: 36px; border-radius: 50%;
-            border: 1px solid rgba(128,128,128,0.2); background: rgba(128,128,128,0.1);
-            color: var(--text-secondary); display: flex; align-items: center; justify-content: center;
-            cursor: pointer; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            transition: all 0.2s;
-        }
-        .btn-icon:active { transform: scale(0.93); background: rgba(128,128,128,0.2); }
-        .btn-icon.edit-active {
-            background: var(--accent-soft);
-            border-color: var(--accent-glow);
-            color: var(--accent);
-        }
-        .btn-icon.refreshing svg { animation: spin 0.8s linear; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .btn-icon svg { width: 17px; height: 17px; }
+    .header-actions { display: flex; gap: 6px; align-items: center; }
+    .btn-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1px solid rgba(128,128,128,0.2); background: rgba(128,128,128,0.1);
+      color: var(--text-secondary); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      transition: all 0.2s;
+    }
+    .btn-icon:active { transform: scale(0.93); background: rgba(128,128,128,0.2); }
+    .btn-icon.edit-active {
+      background: var(--accent-soft);
+      border-color: var(--accent-glow);
+      color: var(--accent);
+    }
+    .btn-icon.refreshing svg { animation: spin 0.8s linear; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-icon svg { width: 17px; height: 17px; }
 
-        .sort-btn .arrow-up, .sort-btn .arrow-down { transition: opacity 0.2s; }
-        .sort-btn.desc .arrow-up { opacity: 0.3; }
-        .sort-btn.desc .arrow-down { opacity: 1; }
-        .sort-btn.asc .arrow-up { opacity: 1; }
-        .sort-btn.asc .arrow-down { opacity: 0.3; }
-        .sort-btn.manual .arrow-up,
-        .sort-btn.manual .arrow-down { opacity: 1; }
+    .sort-btn .arrow-up, .sort-btn .arrow-down { transition: opacity 0.2s; }
+    .sort-btn.desc .arrow-up { opacity: 0.3; }
+    .sort-btn.desc .arrow-down { opacity: 1; }
+    .sort-btn.asc .arrow-up { opacity: 1; }
+    .sort-btn.asc .arrow-down { opacity: 0.3; }
+    .sort-btn.manual .arrow-up,
+    .sort-btn.manual .arrow-down { opacity: 1; }
 
-        .divider {
-            margin: 0 0 8px 0; height: 2px;
-            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 15%, rgba(128,128,128,0.15) 50%, rgba(255,255,255,0.06) 85%, transparent 100%);
-            opacity: 0.8;
-        }
+    .divider {
+      margin: 0 0 8px 0; height: 2px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 15%, rgba(128,128,128,0.15) 50%, rgba(255,255,255,0.06) 85%, transparent 100%);
+      opacity: 0.8;
+    }
 
-        .fund-list { display: flex; flex-direction: column; gap: 6px; padding-bottom: 8px; }
+    .fund-list { display: flex; flex-direction: column; gap: 6px; padding-bottom: 8px; }
 
-        .index-panel { margin-bottom: 6px; }
-        .index-toggle {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 14px; background: var(--bg-card);
-            border: 1px solid var(--border-subtle); border-radius: var(--card-radius-sm);
-            cursor: pointer; user-select: none; box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-        }
-        .index-toggle .index-toggle-text { font-weight: 600; font-size: 0.8rem; }
-        .index-toggle .index-toggle-arrow {
-            font-size: 0.7rem; color: var(--text-tertiary);
-            transition: transform 0.3s ease; display: inline-block;
-        }
-        .index-toggle.expanded .index-toggle-arrow { transform: rotate(180deg); }
-        .index-list {
-            overflow: hidden; max-height: 0; opacity: 0;
-            transition: max-height 0.35s ease-in-out, opacity 0.35s ease-in-out;
-        }
-        .index-list.show { max-height: 600px; opacity: 1; }
-        .index-card {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 14px; margin-top: 6px; background: var(--bg-card);
-            border: 1px solid var(--border-subtle); border-radius: var(--card-radius-sm);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
-        }
-        .index-name { font-weight: 600; font-size: 0.78rem; flex: 1; }
-        .index-price { font-weight: 600; font-size: 0.78rem; margin-right: 10px; text-align: right; min-width: 70px; }
-        .index-change { font-weight: 700; font-size: 0.78rem; text-align: right; min-width: 80px; }
+    /* 大盘指数面板 */
+    .index-panel {
+      margin-bottom: 12px;
+      border-radius: var(--card-radius-sm);
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .index-toggle {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px;
+      cursor: pointer; user-select: none;
+      background: transparent;
+    }
+    .index-toggle .index-toggle-text { font-weight: 600; font-size: 0.8rem; }
+    .index-toggle-arrow {
+      font-size: 0.7rem; color: var(--text-tertiary);
+      transition: transform 0.3s ease; display: inline-block;
+    }
+    .index-toggle.expanded .index-toggle-arrow { transform: rotate(180deg); }
 
-        .swipe-wrapper {
-            position: relative; overflow: hidden; border-radius: var(--card-radius-sm);
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .swipe-content {
-            position: relative; z-index: 2; background: transparent;
-            border-left: 3px solid transparent; padding: 8px 12px;
-            display: flex; align-items: center; justify-content: space-between;
-            min-height: 44px; transition: transform 0.3s cubic-bezier(0.25,0.8,0.25,1.2);
-            will-change: transform; box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-        }
-        .swipe-content.up   { border-left-color: var(--up-color); }
-        .swipe-content.down { border-left-color: var(--down-color); }
-        .swipe-content.zero { border-left-color: rgba(128,128,128,0.15); }
+    .index-grid-container {
+      height: 0; overflow: hidden;
+      transition: height 0.3s ease-out;
+      padding: 0 12px;
+    }
+    .index-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 8px;
+      padding-bottom: 10px;
+    }
+    .index-metric-card {
+      background: var(--bg-summary);
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+      display: flex; flex-direction: column; gap: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.13); /* 改为0.13 */
+    }
+    .index-metric-name { font-size: 0.55rem; color: var(--text-tertiary); }
+    .index-metric-price { font-size: 0.68rem; font-weight: 700; }
+    .index-metric-change { font-size: 0.62rem; font-weight: 700; }
 
-        .swipe-delete {
-            position: absolute; right: 0; top: 0; height: 100%; width: var(--delete-width);
-            background: var(--delete-gradient); color: #fff;
-            display: flex; align-items: center; justify-content: center; gap: 5px;
-            font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em; z-index: 1;
-            border-radius: var(--card-radius-sm); opacity: 0; pointer-events: none;
-        }
-        .swipe-delete.active { opacity: 1; pointer-events: auto; }
-        .swipe-delete svg { width: 16px; height: 16px; opacity: 0.9; flex-shrink: 0; }
+    /* 全局涨跌颜色 */
+    .profit-positive {
+      color: var(--up-color) !important;
+      text-shadow: 0 6px 16px rgba(242,99,99,0.25), 0 14px 32px rgba(242,99,99,0.12);
+    }
+    .profit-negative {
+      color: var(--down-color) !important;
+      text-shadow: 0 6px 16px rgba(77,203,127,0.25), 0 14px 32px rgba(77,203,127,0.12);
+    }
+    .neutral {
+      color: var(--text-primary);
+      text-shadow: 0 6px 16px rgba(255,255,255,0.08), 0 14px 32px rgba(255,255,255,0.04);
+    }
 
-        .fund-card-left { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
-        .industry-tag {
-            font-size: 0.55rem; padding: 2px 6px; border-radius: 10px;
-            white-space: nowrap; flex-shrink: 0; border: 1px solid; font-weight: 600;
-        }
-        .fund-name { font-size: 0.78rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
-        .fund-code { font-size: 0.6rem; color: var(--text-tertiary); white-space: nowrap; flex-shrink: 0; margin-left: 2px; }
-        .change-percent {
-            font-size: 0.8rem; font-weight: 700; padding: 2px 6px; border-radius: 6px;
-            letter-spacing: 0.02em; white-space: nowrap; flex-shrink: 0;
-        }
-        .change-percent.up   { color: var(--up-color); background: var(--up-bg); }
-        .change-percent.down { color: var(--down-color); background: var(--down-bg); }
-        .change-percent.zero { color: var(--text-tertiary); background: rgba(128,128,128,0.05); }
+    /* 自选基金卡片 */
+    .swipe-wrapper {
+      position: relative; overflow: hidden;
+      border-radius: var(--card-radius-sm);
+    }
+    .swipe-content {
+      position: relative; z-index: 2;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--card-radius-sm);
+      border-left: 3px solid transparent; padding: 8px 12px;
+      display: flex; align-items: center; justify-content: space-between;
+      min-height: 44px; transition: transform 0.3s cubic-bezier(0.25,0.8,0.25,1.2);
+      will-change: transform; box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .swipe-content.up   { border-left-color: var(--up-color); }
+    .swipe-content.down { border-left-color: var(--down-color); }
+    .swipe-content.zero { border-left-color: rgba(128,128,128,0.15); }
 
-        .edit-actions {
-            display: none;
-            gap: 6px;
-            margin-left: 8px;
-            flex-shrink: 0;
-        }
-        .edit-actions.show { display: flex; }
-        .edit-btn {
-            width: 28px; height: 28px;
-            border-radius: 8px;
-            border: 1px solid rgba(128,128,128,0.2);
-            background: rgba(128,128,128,0.15);
-            color: var(--text-secondary);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-            font-size: 0.8rem;
-            line-height: 1;
-        }
-        .edit-btn.delete-btn {
-            border-color: rgba(242,99,99,0.3);
-            color: var(--up-color);
-        }
+    .swipe-delete {
+      position: absolute; right: 0; top: 0; height: 100%; width: var(--delete-width);
+      background: var(--delete-gradient); color: #fff;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em; z-index: 1;
+      border-radius: var(--card-radius-sm); opacity: 0; pointer-events: none;
+    }
+    .swipe-delete.active { opacity: 1; pointer-events: auto; }
+    .swipe-delete svg { width: 16px; height: 16px; opacity: 0.9; flex-shrink: 0; }
 
-        .empty-state { text-align: center; padding: 50px; color: var(--text-tertiary); }
-        .empty-state svg { width: 64px; height: 64px; opacity: 0.35; margin-bottom: 16px; stroke: var(--text-tertiary); }
+    .fund-card-left { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+    .industry-tag {
+      font-size: 0.55rem; padding: 2px 6px; border-radius: 10px;
+      white-space: nowrap; flex-shrink: 0; border: 1px solid; font-weight: 600;
+    }
+    .fund-name { font-size: 0.78rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fund-code { font-size: 0.6rem; color: var(--text-tertiary); white-space: nowrap; flex-shrink: 0; margin-left: 2px; }
+    .change-percent {
+      font-size: 0.8rem; font-weight: 700; padding: 2px 6px; border-radius: 6px;
+      letter-spacing: 0.02em; white-space: nowrap; flex-shrink: 0;
+    }
+    .change-percent.up   { color: var(--up-color); background: var(--up-bg); }
+    .change-percent.down { color: var(--down-color); background: var(--down-bg); }
+    .change-percent.zero { color: var(--text-tertiary); background: rgba(128,128,128,0.05); }
 
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; opacity: 0; pointer-events: none; backdrop-filter: blur(4px); transition: opacity 0.35s; }
-        .overlay.active { opacity: 1; pointer-events: auto; }
-        .bottom-sheet {
-            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
-            z-index: 101; width: 100%; max-width: 520px; background: var(--bg-header);
-            backdrop-filter: blur(24px); border-radius: 22px 22px 0 0;
-            padding: 8px 16px calc(var(--safe-bottom) + 20px); border: 1px solid var(--border-subtle);
-            transition: transform 0.4s cubic-bezier(0.32,0.72,0,1);
-        }
-        .bottom-sheet.active { transform: translateX(-50%) translateY(0); }
-        .sheet-handle { width: 32px; height: 4px; background: rgba(128,128,128,0.3); border-radius: 2px; margin: 0 auto 14px; }
-        .sheet-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 12px; color: var(--text-secondary); }
-        .input-group { display: flex; gap: 10px; align-items: center; }
-        .input-code { flex: 1; height: 44px; border-radius: 14px; border: 1px solid var(--border-glow); background: var(--bg-card); color: #fff; padding: 0 14px; outline: none; }
-        .btn-add-circle { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: #111; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 1.4rem; transition: 0.2s; flex-shrink: 0; }
-        .btn-add-circle:active { transform: scale(0.93); opacity: 0.8; }
+    .edit-actions {
+      display: none; gap: 6px; margin-left: 8px; flex-shrink: 0;
+    }
+    .edit-actions.show { display: flex; }
+    .edit-btn {
+      width: 28px; height: 28px; border-radius: 8px;
+      border: 1px solid rgba(128,128,128,0.2); background: rgba(128,128,128,0.15);
+      color: var(--text-secondary); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.8rem; line-height: 1;
+    }
 
-        .toast { position: fixed; bottom: 30%; left: 50%; transform: translate(-50%,50%) scale(0.8); z-index: 200; padding: 10px 22px; border-radius: 24px; background: var(--bg-header); backdrop-filter: blur(16px); border: 1px solid var(--border-glow); color: #fff; font-size: 0.8rem; pointer-events: none; opacity: 0; transition: 0.3s; white-space: nowrap; }
-        .toast.show { opacity: 1; transform: translate(-50%,50%) scale(1); }
+    .empty-state { text-align: center; padding: 50px; color: var(--text-tertiary); }
+    .empty-state svg { width: 64px; height: 64px; opacity: 0.35; margin-bottom: 16px; stroke: var(--text-tertiary); }
 
-        .summary-cards { display: flex; gap: 10px; margin: 8px 0 18px; }
-        .summary-card {
-            flex: 1; background: var(--bg-summary);
-            border-radius: var(--card-radius-lg); padding: 18px 10px; text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.33);
-        }
-        .summary-label { font-size: 0.6rem; color: var(--text-tertiary); margin-bottom: 8px; }
-        .summary-value { font-size: 1.1rem; font-weight: 700; }
-        .profit-positive { color: var(--up-color) !important; }
-        .profit-negative { color: var(--down-color) !important; }
-        .summary-value.profit-positive {
-            color: var(--up-color);
-            text-shadow: 0 6px 16px rgba(242,99,99,0.25), 0 14px 32px rgba(242,99,99,0.12);
-        }
-        .summary-value.profit-negative {
-            color: var(--down-color);
-            text-shadow: 0 6px 16px rgba(77,203,127,0.25), 0 14px 32px rgba(77,203,127,0.12);
-        }
-        .summary-value.neutral {
-            color: var(--text-primary);
-            text-shadow: 0 6px 16px rgba(255,255,255,0.08), 0 14px 32px rgba(255,255,255,0.04);
-        }
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; opacity: 0; pointer-events: none; backdrop-filter: blur(4px); transition: opacity 0.35s; }
+    .overlay.active { opacity: 1; pointer-events: auto; }
+    .bottom-sheet {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
+      z-index: 101; width: 100%; max-width: 520px; background: var(--bg-header);
+      backdrop-filter: blur(24px); border-radius: 22px 22px 0 0;
+      padding: 8px 16px calc(var(--safe-bottom) + 20px); border: 1px solid var(--border-subtle);
+      transition: transform 0.4s cubic-bezier(0.32,0.72,0,1);
+    }
+    .bottom-sheet.active { transform: translateX(-50%) translateY(0); }
+    .sheet-handle { width: 32px; height: 4px; background: rgba(128,128,128,0.3); border-radius: 2px; margin: 0 auto 14px; }
+    .sheet-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 12px; color: var(--text-secondary); }
+    .input-group { display: flex; gap: 10px; align-items: center; }
+    .input-code { flex: 1; height: 44px; border-radius: 14px; border: 1px solid var(--border-glow); background: var(--bg-card); color: #fff; padding: 0 14px; outline: none; }
+    .btn-add-circle { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: #111; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 1.4rem; transition: 0.2s; flex-shrink: 0; }
+    .btn-add-circle:active { transform: scale(0.93); opacity: 0.8; }
 
-        .holding-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--card-radius-md); padding: 10px 10px;
-            margin-bottom: 6px; display: flex; flex-direction: column; gap: 8px;
-            border-left: 3px solid transparent; transition: 0.2s;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.02);
-        }
-        .holding-card.up { border-left-color: var(--up-color); }
-        .holding-card.down { border-left-color: var(--down-color); }
-        .holding-card.zero { border-left-color: rgba(128,128,128,0.15); }
+    .toast { position: fixed; bottom: 30%; left: 50%; transform: translate(-50%,50%) scale(0.8); z-index: 200; padding: 10px 22px; border-radius: 24px; background: var(--bg-header); backdrop-filter: blur(16px); border: 1px solid var(--border-glow); color: #fff; font-size: 0.8rem; pointer-events: none; opacity: 0; transition: 0.3s; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translate(-50%,50%) scale(1); }
 
-        .holding-header { display: flex; align-items: center; justify-content: space-between; }
-        .holding-header-left { display: flex; align-items: center; gap: 8px; }
-        .update-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-tertiary); flex-shrink: 0; transition: background 0.3s; }
-        .update-dot.updated { background: var(--accent); }
+    /* 汇总卡片 */
+    .summary-cards { display: flex; gap: 10px; margin: 8px 0 18px; }
+    .summary-card {
+      flex: 1; background: var(--bg-summary);
+      border-radius: var(--card-radius-lg); padding: 18px 10px; text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.13); /* 改为0.13 */
+    }
+    .summary-label { font-size: 0.6rem; color: var(--text-tertiary); margin-bottom: 8px; }
+    .summary-value { font-size: 1.1rem; font-weight: 700; }
 
-        .holding-name { font-weight: 600; font-size: 0.8rem; }
-        .holding-code { font-size: 0.6rem; color: var(--text-tertiary); }
-        .holding-amount { font-weight: 700; font-size: 1rem; color: var(--text-primary); }
+    /* 持仓卡片 */
+    .holding-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--card-radius-md); padding: 10px 10px;
+      margin-bottom: 6px; display: flex; flex-direction: column; gap: 8px;
+      border-left: 3px solid transparent; transition: 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.02);
+    }
+    .holding-card.up { border-left-color: var(--up-color); }
+    .holding-card.down { border-left-color: var(--down-color); }
+    .holding-card.zero { border-left-color: rgba(128,128,128,0.15); }
 
-        .metrics-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; }
-        .metric-card {
-            background: #1c1c26; border-radius: 10px; padding: 8px 5px;
-            text-align: center; display: flex; flex-direction: column; gap: 3px;
-        }
-        .metric-label { font-size: 0.52rem; color: var(--text-tertiary); }
-        .metric-value { font-size: 0.65rem; font-weight: 600; }
+    .holding-header { display: flex; align-items: center; justify-content: space-between; }
+    .holding-header-left { display: flex; align-items: center; gap: 8px; }
+    .update-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-tertiary); flex-shrink: 0; transition: background 0.3s; }
+    .update-dot.updated { background: var(--accent); }
 
-        .btn {
-            background: rgba(255,255,255,0.06); border: 1px solid var(--border-glow);
-            color: #fff; padding: 5px 10px; border-radius: 8px;
-            font-size: 0.65rem; cursor: pointer; margin-left: 4px;
-        }
-        .btn.danger { border-color: #f26363; color: #f26363; }
+    .holding-name { font-weight: 600; font-size: 0.8rem; }
+    .holding-code { font-size: 0.6rem; color: var(--text-tertiary); }
+    .holding-amount { font-weight: 700; font-size: 1rem; color: var(--text-primary); }
 
-        .editing .metrics-row { display: none; }
-        .editing .edit-controls {
-            display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
-        }
-        .edit-controls input {
-            width: 70px; background: rgba(255,255,255,0.08); border: 1px solid var(--border-subtle);
-            border-radius: 6px; padding: 4px 6px; color: #fff;
-            margin: 0 4px; -webkit-appearance: none;
-        }
+    .metrics-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; }
+    .metric-card {
+      background: #1c1c26; border-radius: 10px; padding: 8px 5px;
+      text-align: center; display: flex; flex-direction: column; gap: 3px;
+    }
+    .metric-label { font-size: 0.52rem; color: var(--text-tertiary); }
+    .metric-value { font-size: 0.65rem; font-weight: 600; }
 
-        #holdingSheet .input-code { width: 100%; flex: none; display: block; }
-        #holdingSheet .btn-full { width: 100%; margin-left: 0; padding: 10px 0; font-size: 0.85rem; border-radius: 14px; }
+    .btn {
+      background: rgba(255,255,255,0.06); border: 1px solid var(--border-glow);
+      color: #fff; padding: 5px 10px; border-radius: 8px;
+      font-size: 0.65rem; cursor: pointer; margin-left: 4px;
+    }
+    .btn.danger { border-color: #f26363; color: #f26363; }
 
-        .menu-item {
-            display: flex; align-items: center; gap: 12px;
-            padding: 12px 14px; border-radius: 14px;
-            background: var(--bg-card); border: 1px solid var(--border-subtle);
-            cursor: pointer; transition: 0.2s;
-        }
-        .menu-item:active { background: rgba(255,255,255,0.06); }
-        .menu-item svg { width: 20px; height: 20px; stroke: var(--text-secondary); }
-        .menu-item span { font-size: 0.85rem; font-weight: 500; }
-    </style>
+    .edit-controls {
+      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    }
+    .edit-controls input {
+      width: 70px; background: rgba(255,255,255,0.08); border: 1px solid var(--border-subtle);
+      border-radius: 6px; padding: 4px 6px; color: #fff;
+      margin: 0 4px; -webkit-appearance: none;
+    }
+
+    #holdingSheet .input-code { width: 100%; flex: none; display: block; }
+    #holdingSheet .btn-full { width: 100%; margin-left: 0; padding: 10px 0; font-size: 0.85rem; border-radius: 14px; }
+
+    .menu-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px; border-radius: 14px;
+      background: var(--bg-card); border: 1px solid var(--border-subtle);
+      cursor: pointer; transition: 0.2s;
+    }
+    .menu-item:active { background: rgba(255,255,255,0.06); }
+    .menu-item svg { width: 20px; height: 20px; stroke: var(--text-secondary); }
+    .menu-item span { font-size: 0.85rem; font-weight: 500; }
+  </style>
 </head>
 <body>
 <div class="app-container">
-    <nav class="bottom-nav">
-        <div class="nav-item active" data-page="watchlist">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line>
-                <line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line>
-            </svg>
-        </div>
-        <div class="nav-item" data-page="holdings">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                <polyline points="2 17 12 22 22 17"></polyline>
-                <polyline points="2 12 12 17 22 12"></polyline>
-            </svg>
-        </div>
-    </nav>
+  <nav class="bottom-nav">
+    <div class="nav-item active" data-page="watchlist">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line>
+        <line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line>
+      </svg>
+    </div>
+    <div class="nav-item" data-page="holdings">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </div>
+  </nav>
 
-    <div id="watchlistPage" class="page active">
-        <header class="header" id="watchlistHeader">
-            <div class="header-title-group">
-                <div class="header-icon" id="watchlistHeaderIcon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f26363" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line>
-                        <line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line>
-                    </svg>
-                </div>
-                <div>
-                    <div class="header-title">我的自选</div>
-                    <div class="header-subtitle"><span id="headerTime">加载中...</span></div>
-                </div>
-            </div>
-            <div class="header-actions">
-                <button class="btn-icon" id="btnSyncHoldings" title="同步持仓">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
-                </button>
-                <button class="btn-icon sort-btn manual" id="btnSort" title="排序">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path class="arrow-up" d="M3 9l4 -4l4 4m-4 -4v14" />
-                        <path class="arrow-down" d="M21 15l-4 4l-4 -4m4 4v-14" />
-                    </svg>
-                </button>
-                <button class="btn-icon" id="btnEditWatchlist" title="编辑自选">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                </button>
-                <button class="btn-icon" id="btnRefresh" title="刷新">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-                    </svg>
-                </button>
-                <button class="btn-icon" id="btnAddWatchlist" title="添加自选">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                </button>
-            </div>
-        </header>
-        <div class="divider"></div>
-
-        <div class="index-panel">
-            <div class="index-toggle" id="indexToggle">
-                <span class="index-toggle-text">大盘指数</span>
-                <span class="index-toggle-arrow">▼</span>
-            </div>
-            <div class="index-list" id="indexList"></div>
+  <div id="watchlistPage" class="page active">
+    <header class="header" id="watchlistHeader">
+      <div class="header-title-group">
+        <div class="header-icon" id="watchlistHeaderIcon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f26363" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
         </div>
-
-        <div class="fund-list" id="fundList"></div>
-        <div class="empty-state" id="emptyState" style="display:none;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            <div>暂无自选基金</div>
+        <div>
+          <div class="header-title">我的自选</div>
+          <div class="header-subtitle"><span id="headerTime">加载中...</span></div>
         </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-icon" id="btnSyncHoldings" title="同步持仓">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+        </button>
+        <button class="btn-icon sort-btn manual" id="btnSort" title="排序">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path class="arrow-up" d="M3 9l4 -4l4 4m-4 -4v14" />
+            <path class="arrow-down" d="M21 15l-4 4l-4 -4m4 4v-14" />
+          </svg>
+        </button>
+        <button class="btn-icon" id="btnEditWatchlist" title="编辑自选">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </button>
+        <button class="btn-icon" id="btnRefresh" title="刷新">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+        </button>
+        <button class="btn-icon" id="btnAddWatchlist" title="添加自选">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+    </header>
+    <div class="divider"></div>
+
+    <!-- 大盘指数面板 -->
+    <div class="index-panel" id="indexPanel">
+      <div class="index-toggle" id="indexToggle">
+        <span class="index-toggle-text">大盘指数</span>
+        <span class="index-toggle-arrow">▼</span>
+      </div>
+      <div class="index-grid-container" id="indexGridContainer">
+        <div class="index-grid" id="indexGrid"></div>
+      </div>
     </div>
 
-    <div id="holdingsPage" class="page">
-        <header class="header" id="holdingsHeader">
-            <div class="header-title-group">
-                <div class="header-icon holdings-header-icon" id="holdingsHeaderIcon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f26363" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                        <polyline points="2 17 12 22 22 17"></polyline>
-                        <polyline points="2 12 12 17 22 12"></polyline>
-                    </svg>
-                </div>
-                <div>
-                    <div class="header-title">我的持仓</div>
-                    <div class="header-subtitle"><span id="holdingsUpdateTime">加载中...</span></div>
-                </div>
-            </div>
-            <div class="header-actions">
-                <button class="btn-icon" id="btnBulkEdit" title="批量编辑"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-                <button class="btn-icon" id="btnBackup" title="备份"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></button>
-                <button class="btn-icon" id="btnRefreshHoldings" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
-                <button class="btn-icon" id="btnAddHolding" title="添加持仓"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-            </div>
-        </header>
-        <div class="divider"></div>
-        <div class="summary-cards" id="summaryCards">
-            <div class="summary-card" id="cardTotalAsset"><div class="summary-label">总资产</div><div class="summary-value neutral" id="totalAsset">--</div></div>
-            <div class="summary-card" id="cardTodayProfit"><div class="summary-label">今日收益</div><div class="summary-value" id="todayProfit">--</div></div>
-            <div class="summary-card" id="cardTotalProfit"><div class="summary-label">累计盈亏</div><div class="summary-value" id="totalProfit">--</div></div>
-        </div>
-        <div id="holdingsList"></div>
+    <div class="fund-list" id="fundList"></div>
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <div>暂无自选基金</div>
     </div>
+  </div>
 
-    <div class="overlay" id="overlay"></div>
-    <div class="bottom-sheet" id="bottomSheet">
-        <div class="sheet-handle"></div>
-        <div class="sheet-title">添加自选基金</div>
-        <div class="input-group">
-            <input type="text" class="input-code" id="inputCode" placeholder="输入6位基金代码" maxlength="6" inputmode="numeric">
-            <button class="btn-add-circle" id="btnConfirmAdd">+</button>
+  <div id="holdingsPage" class="page">
+    <header class="header" id="holdingsHeader">
+      <div class="header-title-group">
+        <div class="header-icon holdings-header-icon" id="holdingsHeaderIcon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f26363" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
         </div>
-    </div>
-    <div class="bottom-sheet" id="holdingSheet">
-        <div class="sheet-handle"></div>
-        <div class="sheet-title">添加持仓基金</div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-            <input type="text" class="input-code" id="holdingCode" placeholder="基金代码 (6位)" maxlength="6" inputmode="numeric">
-            <input type="number" class="input-code" id="holdingCost" placeholder="成本净值" step="any" inputmode="decimal">
-            <input type="number" class="input-code" id="holdingShares" placeholder="持有份额" step="any" inputmode="decimal">
-            <button class="btn btn-full" id="confirmAddHoldingSheet" style="background:var(--accent);color:#111;">添加</button>
+        <div>
+          <div class="header-title">我的持仓</div>
+          <div class="header-subtitle"><span id="holdingsUpdateTime">加载中...</span></div>
         </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-icon" id="btnBulkEdit" title="批量编辑"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="btn-icon" id="btnBackup" title="备份"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></button>
+        <button class="btn-icon" id="btnRefreshHoldings" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+        <button class="btn-icon" id="btnAddHolding" title="添加持仓"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+      </div>
+    </header>
+    <div class="divider"></div>
+    <div class="summary-cards" id="summaryCards">
+      <div class="summary-card" id="cardTotalAsset"><div class="summary-label">总资产</div><div class="summary-value neutral" id="totalAsset">--</div></div>
+      <div class="summary-card" id="cardTodayProfit"><div class="summary-label">今日收益</div><div class="summary-value" id="todayProfit">--</div></div>
+      <div class="summary-card" id="cardTotalProfit"><div class="summary-label">累计盈亏</div><div class="summary-value" id="totalProfit">--</div></div>
     </div>
-    <div class="bottom-sheet" id="backupSheet">
-        <div class="sheet-handle"></div>
-        <div class="sheet-title">配置备份</div>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-            <div class="menu-item" id="btnExportSheet">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                <span>导出配置</span>
-            </div>
-            <div class="menu-item" id="btnCopyConfig">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-                <span>复制配置</span>
-            </div>
-            <div class="menu-item" id="btnImportSheet">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <span>导入配置</span>
-            </div>
-            <input type="file" id="importFile" accept=".json" style="display:none;">
-        </div>
+    <div id="holdingsList"></div>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+  <div class="bottom-sheet" id="bottomSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">添加自选基金</div>
+    <div class="input-group">
+      <input type="text" class="input-code" id="inputCode" placeholder="输入6位基金代码" maxlength="6" inputmode="numeric">
+      <button class="btn-add-circle" id="btnConfirmAdd">+</button>
     </div>
-    <div class="toast" id="toast"></div>
+  </div>
+  <div class="bottom-sheet" id="holdingSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">添加持仓基金</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <input type="text" class="input-code" id="holdingCode" placeholder="基金代码 (6位)" maxlength="6" inputmode="numeric">
+      <input type="number" class="input-code" id="holdingCost" placeholder="成本净值" step="any" inputmode="decimal">
+      <input type="number" class="input-code" id="holdingShares" placeholder="持有份额" step="any" inputmode="decimal">
+      <button class="btn btn-full" id="confirmAddHoldingSheet" style="background:var(--accent);color:#111;">添加</button>
+    </div>
+  </div>
+  <div class="bottom-sheet" id="backupSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">配置备份</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="menu-item" id="btnExportSheet">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>导出配置</span>
+      </div>
+      <div class="menu-item" id="btnCopyConfig">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        <span>复制配置</span>
+      </div>
+      <div class="menu-item" id="btnImportSheet">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span>导入配置</span>
+      </div>
+      <input type="file" id="importFile" accept=".json" style="display:none;">
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
 </div>
 
 <script>
-    (() => {
-        const STORAGE_WATCHLIST = 'fund_watchlist_v2';
-        const STORAGE_HOLDINGS  = 'fund_holdings';
-        const CACHE_KEY         = 'fund_data_cache';
-        const OFFICIAL_CACHE_KEY = 'official_data_cache';
-        const MANUAL_ORDER_KEY  = 'manual_order';
-        const REFRESH_TRADING   = 30000;
-        const REFRESH_IDLE      = 300000;
-        const FUND_API          = 'https://fundgz.1234567.com.cn/js/';
-        const MAX_CON           = 3;
+(() => {
+  // ========== 常量 & 存储键 ==========
+  const STORAGE_WATCHLIST = 'fund_watchlist_v2';
+  const STORAGE_HOLDINGS  = 'fund_holdings';
+  const CACHE_KEY         = 'fund_data_cache';
+  const OFFICIAL_CACHE_KEY = 'official_data_cache';
+  const MANUAL_ORDER_KEY  = 'manual_order';
+  const REFRESH_TRADING   = 30000;
+  const REFRESH_IDLE      = 300000;
+  const FUND_API          = 'https://fundgz.1234567.com.cn/js/';
+  const MAX_CON           = 3;
 
-        const $ = (id) => document.getElementById(id);
-        const watchlistPage     = $('watchlistPage');
-        const holdingsPage      = $('holdingsPage');
-        const fundList          = $('fundList');
-        const emptyState        = $('emptyState');
-        const btnRefresh        = $('btnRefresh');
-        const btnAddWatchlist   = $('btnAddWatchlist');
-        const btnSort           = $('btnSort');
-        const btnSyncHoldings   = $('btnSyncHoldings');
-        const btnEditWatchlist  = $('btnEditWatchlist');
-        const overlay           = $('overlay');
-        const bottomSheet       = $('bottomSheet');
-        const inputCode         = $('inputCode');
-        const btnConfirmAdd     = $('btnConfirmAdd');
-        const toast             = $('toast');
-        const headerTime        = $('headerTime');
-        const holdingsUpdateTime = $('holdingsUpdateTime');
-        const holdingsList      = $('holdingsList');
-        const btnBulkEdit       = $('btnBulkEdit');
-        const btnAddHolding     = $('btnAddHolding');
-        const btnRefreshHoldings = $('btnRefreshHoldings');
-        const holdingSheet      = $('holdingSheet');
-        const holdingCode       = $('holdingCode');
-        const holdingCost       = $('holdingCost');
-        const holdingShares     = $('holdingShares');
-        const confirmAddHoldingSheet = $('confirmAddHoldingSheet');
-        const btnBackup         = $('btnBackup');
-        const backupSheet       = $('backupSheet');
-        const btnExportSheet    = $('btnExportSheet');
-        const btnCopyConfig     = $('btnCopyConfig');
-        const btnImportSheet    = $('btnImportSheet');
-        const importFile        = $('importFile');
-        const watchlistHeaderIcon = $('watchlistHeaderIcon');
-        const holdingsHeaderIcon  = $('holdingsHeaderIcon');
-        const indexToggle       = $('indexToggle');
-        const indexList         = $('indexList');
+  const $ = (id) => document.getElementById(id);
+  const watchlistPage     = $('watchlistPage');
+  const holdingsPage      = $('holdingsPage');
+  const fundList          = $('fundList');
+  const emptyState        = $('emptyState');
+  const btnRefresh        = $('btnRefresh');
+  const btnAddWatchlist   = $('btnAddWatchlist');
+  const btnSort           = $('btnSort');
+  const btnSyncHoldings   = $('btnSyncHoldings');
+  const btnEditWatchlist  = $('btnEditWatchlist');
+  const overlay           = $('overlay');
+  const bottomSheet       = $('bottomSheet');
+  const inputCode         = $('inputCode');
+  const btnConfirmAdd     = $('btnConfirmAdd');
+  const toast             = $('toast');
+  const headerTime        = $('headerTime');
+  const holdingsUpdateTime = $('holdingsUpdateTime');
+  const holdingsList      = $('holdingsList');
+  const btnBulkEdit       = $('btnBulkEdit');
+  const btnAddHolding     = $('btnAddHolding');
+  const btnRefreshHoldings = $('btnRefreshHoldings');
+  const holdingSheet      = $('holdingSheet');
+  const holdingCode       = $('holdingCode');
+  const holdingCost       = $('holdingCost');
+  const holdingShares     = $('holdingShares');
+  const confirmAddHoldingSheet = $('confirmAddHoldingSheet');
+  const btnBackup         = $('btnBackup');
+  const backupSheet       = $('backupSheet');
+  const btnExportSheet    = $('btnExportSheet');
+  const btnCopyConfig     = $('btnCopyConfig');
+  const btnImportSheet    = $('btnImportSheet');
+  const importFile        = $('importFile');
+  const watchlistHeaderIcon = $('watchlistHeaderIcon');
+  const holdingsHeaderIcon  = $('holdingsHeaderIcon');
+  const indexToggle       = $('indexToggle');
+  const indexGridContainer = $('indexGridContainer');
+  const indexGrid         = $('indexGrid');
 
-        let watchlist = [], holdings = {}, fundDataCache = {}, previousValuations = {};
-        let officialDataCache = {};
-        let refreshTimer = null, toastTimer = null;
-        let isSheetOpen = false, sortMode = 'manual', isBulkEditing = false;
-        let indexExpanded = false;
-        let isEditMode = false;
+  let watchlist = [], holdings = {}, fundDataCache = {}, officialDataCache = {};
+  let refreshTimer = null, toastTimer = null;
+  let sortMode = 'manual', isBulkEditing = false, indexExpanded = false, isEditMode = false;
+  let manualOrder = [];
+  let openedSwipe = null, swipeStartX = 0, swipeStartY = 0, swipeCurrentX = 0, isSwiping = false;
 
-        let manualOrder = [];
-        let openedSwipe = null;
-        let swipeStartX = 0, swipeStartY = 0, swipeCurrentX = 0;
-        let isSwiping = false;
+  const escapeHTML = (str) => { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; };
+  function showToast(msg, type = '') {
+    clearTimeout(toastTimer);
+    toast.textContent = msg;
+    toast.className = 'toast ' + type + ' show';
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+  function isTradingTime() {
+    const now = new Date();
+    if (now.getDay() === 0 || now.getDay() === 6) return false;
+    const m = now.getHours() * 60 + now.getMinutes();
+    return (m >= 570 && m <= 690) || (m >= 780 && m <= 900);
+  }
+  function formatMoney(val) { return (val >= 0 ? '+' : '') + val.toFixed(2); }
+  function getTodayStr() {
+    const now = new Date();
+    return now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+  }
 
-        const escapeHTML = (str) => { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; };
-        function showToast(msg, type = '') {
-            clearTimeout(toastTimer);
-            toast.textContent = msg;
-            toast.className = 'toast ' + type + ' show';
-            toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+  function loadOfficialCache() {
+    try {
+      const stored = localStorage.getItem(OFFICIAL_CACHE_KEY);
+      if (stored) {
+        officialDataCache = JSON.parse(stored);
+        const today = getTodayStr();
+        for (const code in officialDataCache) if (officialDataCache[code].date !== today) delete officialDataCache[code];
+      }
+    } catch (e) { officialDataCache = {}; }
+  }
+  function saveOfficialCache() { localStorage.setItem(OFFICIAL_CACHE_KEY, JSON.stringify(officialDataCache)); }
+  function loadManualOrder() { try { manualOrder = JSON.parse(localStorage.getItem(MANUAL_ORDER_KEY)) || []; } catch { manualOrder = []; } }
+  function saveManualOrder() { localStorage.setItem(MANUAL_ORDER_KEY, JSON.stringify(manualOrder)); }
+  function loadWatchlist() { try { watchlist = JSON.parse(localStorage.getItem(STORAGE_WATCHLIST)) || []; } catch { watchlist = []; } watchlist = [...new Set(watchlist.filter(c => /^\d{6}$/.test(c)))]; }
+  function saveWatchlist() { localStorage.setItem(STORAGE_WATCHLIST, JSON.stringify(watchlist)); }
+  function loadHoldings() { try { holdings = JSON.parse(localStorage.getItem(STORAGE_HOLDINGS)) || {}; } catch { holdings = {}; } }
+  function saveHoldings() { localStorage.setItem(STORAGE_HOLDINGS, JSON.stringify(holdings)); }
+  function loadCache() { try { const c = JSON.parse(localStorage.getItem(CACHE_KEY)); if (c) fundDataCache = c; } catch {} }
+  function saveCache() { localStorage.setItem(CACHE_KEY, JSON.stringify(fundDataCache)); }
+
+  const INDUSTRY_COLORS = {
+    '白酒': { bg: 'rgba(255,180,100,0.2)', color: '#ffb464', border: 'rgba(255,180,100,0.4)' },
+    '医药': { bg: 'rgba(100,200,255,0.2)', color: '#64c8ff', border: 'rgba(100,200,255,0.4)' },
+    '新能源': { bg: 'rgba(100,255,150,0.2)', color: '#64ff96', border: 'rgba(100,255,150,0.4)' },
+    '科技': { bg: 'rgba(180,130,255,0.2)', color: '#b482ff', border: 'rgba(180,130,255,0.4)' },
+    '消费': { bg: 'rgba(255,150,150,0.2)', color: '#ff9696', border: 'rgba(255,150,150,0.4)' },
+    '军工': { bg: 'rgba(150,180,220,0.2)', color: '#96b4dc', border: 'rgba(150,180,220,0.4)' },
+    '金融': { bg: 'rgba(220,200,100,0.2)', color: '#dcc864', border: 'rgba(220,200,100,0.4)' },
+    '地产': { bg: 'rgba(200,160,120,0.2)', color: '#c8a078', border: 'rgba(200,160,120,0.4)' },
+    '传媒': { bg: 'rgba(255,180,200,0.2)', color: '#ffb4c8', border: 'rgba(255,180,200,0.4)' },
+    '汽车': { bg: 'rgba(120,200,220,0.2)', color: '#78c8dc', border: 'rgba(120,200,220,0.4)' },
+    '周期': { bg: 'rgba(200,180,140,0.2)', color: '#c8b48c', border: 'rgba(200,180,140,0.4)' },
+    '计算机': { bg: 'rgba(140,160,255,0.2)', color: '#8ca0ff', border: 'rgba(140,160,255,0.4)' },
+    '环保': { bg: 'rgba(100,220,150,0.2)', color: '#64dc96', border: 'rgba(100,220,150,0.4)' },
+    '教育': { bg: 'rgba(255,200,120,0.2)', color: '#ffc878', border: 'rgba(255,200,120,0.4)' },
+    '交通': { bg: 'rgba(150,200,200,0.2)', color: '#96c8c8', border: 'rgba(150,200,200,0.4)' },
+    '能源': { bg: 'rgba(255,150,100,0.2)', color: '#ff9664', border: 'rgba(255,150,100,0.4)' },
+    '指数': { bg: 'rgba(180,180,200,0.2)', color: '#b4b4c8', border: 'rgba(180,180,200,0.4)' },
+    '债券': { bg: 'rgba(200,200,160,0.2)', color: '#c8c8a0', border: 'rgba(200,200,160,0.4)' },
+    '混合': { bg: 'rgba(220,180,200,0.2)', color: '#dcb4c8', border: 'rgba(220,180,200,0.4)' },
+    '量化': { bg: 'rgba(160,200,180,0.2)', color: '#a0c8b4', border: 'rgba(160,200,180,0.4)' },
+    '红利': { bg: 'rgba(255,200,150,0.2)', color: '#ffc896', border: 'rgba(255,200,150,0.4)' },
+    'QDII': { bg: 'rgba(150,180,255,0.2)', color: '#96b4ff', border: 'rgba(150,180,255,0.4)' }
+  };
+  const INDUSTRY_KEYWORDS = [
+    { keys:['白酒','酒'], tag:'白酒' },{ keys:['医疗','医药','健康','生物','医'], tag:'医药' },
+    { keys:['新能源','光伏','锂电','电池','碳中和'], tag:'新能源' },{ keys:['科技','芯片','半导体','电子','5G','通信','物联网'], tag:'科技' },
+    { keys:['消费','食品','饮料','农业','粮食'], tag:'消费' },{ keys:['军工','国防','航天','军事'], tag:'军工' },
+    { keys:['证券','券商','银行','金融','保险'], tag:'金融' },{ keys:['地产','房地产','基建','建材'], tag:'地产' },
+    { keys:['传媒','影视','娱乐','文化'], tag:'传媒' },{ keys:['汽车','整车','新能源车','智能汽车'], tag:'汽车' },
+    { keys:['有色','钢铁','煤炭','化工','材料','稀土','石油'], tag:'周期' },{ keys:['计算机','软件','人工智能','大数据','云'], tag:'计算机' },
+    { keys:['环保','环境','低碳'], tag:'环保' },{ keys:['教育','培训'], tag:'教育' },{ keys:['旅游','酒店','航空','运输','物流'], tag:'交通' },
+    { keys:['电力','公用事业','能源'], tag:'能源' },{ keys:['指数','300','500','创业板','科创','深证','上证','中证','沪深'], tag:'指数' },
+    { keys:['债','债券','纯债','中短债'], tag:'债券' },{ keys:['混合','灵活'], tag:'混合' },{ keys:['量化','对冲'], tag:'量化' },{ keys:['红利','高股息'], tag:'红利' },
+    { keys:['QDII','海外','纳斯达克','标普','道琼斯','全球','德国','日本','亚太','恒生'], tag:'QDII' }
+  ];
+  function getIndustry(name) {
+    if (!name) return '';
+    for (const item of INDUSTRY_KEYWORDS) for (const key of item.keys) if (name.includes(key)) return item.tag;
+    return '';
+  }
+
+  function fetchSingle(code) {
+    return new Promise((resolve, reject) => {
+      const sid = 'jsonp-' + code;
+      document.getElementById(sid)?.remove();
+      const s = document.createElement('script');
+      s.id = sid; s.src = FUND_API + code + '.js?rt=' + Date.now();
+      let tid = setTimeout(() => { cleanup(); reject(new Error('超时')); }, 8000);
+      if (!window._jsonpCB) window._jsonpCB = {};
+      window._jsonpCB[code] = (data) => { cleanup(); resolve(data); };
+      function cleanup() { clearTimeout(tid); if (s.parentNode) s.remove(); delete window._jsonpCB[code]; }
+      s.onerror = () => { cleanup(); reject(new Error('网络错误')); };
+      document.head.appendChild(s);
+    });
+  }
+  window.jsonpgz = (d) => { if (d?.fundcode && window._jsonpCB?.[d.fundcode]) window._jsonpCB[d.fundcode](d); };
+
+  async function fetchOfficialData(code) {
+    const today = getTodayStr();
+    if (officialDataCache[code] && officialDataCache[code].date === today) return officialDataCache[code];
+    try {
+      const targetUrl = `https://capsule-tau.vercel.app/api/netvalue?code=${code}`;
+      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+      const resp = await fetch(proxyUrl);
+      if (!resp.ok) return null;
+      const data = await resp.json();
+      if (data) { data.date = today; officialDataCache[code] = data; saveOfficialCache(); }
+      return data;
+    } catch (e) { return null; }
+  }
+
+  async function fetchIndexData() {
+    try {
+      const INDEX_CODES = [
+        { code: 'sh000001', name: '上证指数' },{ code: 'sz399001', name: '深证成指' },
+        { code: 'sz399006', name: '创业板指' },{ code: 'sh000688', name: '科创50' },
+        { code: 'sh000300', name: '沪深300' },{ code: 'sh000905', name: '中证500' },
+        { code: 'sh000852', name: '中证1000' },{ code: 'sh000016', name: '上证50' }
+      ];
+      const codes = INDEX_CODES.map(i => `s_${i.code}`).join(',');
+      const resp = await fetch(`https://qt.gtimg.cn/q=${codes}`);
+      const text = await resp.text();
+      const lines = text.split('\n').filter(line => line.includes('='));
+      const map = {};
+      lines.forEach(line => {
+        const m = line.match(/v_s_(\w+)="(.+)"/);
+        if (!m) return;
+        const raw = m[2].split('~');
+        if (raw.length < 5) return;
+        map[m[1]] = { price: parseFloat(raw[3]), change: parseFloat(raw[4]), changePercent: parseFloat(raw[5]) };
+      });
+      let html = '';
+      INDEX_CODES.forEach(item => {
+        const d = map[item.code];
+        if (!d || isNaN(d.price)) {
+          html += `<div class="index-metric-card">
+            <div class="index-metric-name">${item.name}</div>
+            <div class="index-metric-price neutral">--</div>
+            <div class="index-metric-change neutral">--</div>
+          </div>`;
+          return;
         }
-        function isTradingTime() {
-            const now = new Date();
-            if (now.getDay() === 0 || now.getDay() === 6) return false;
-            const m = now.getHours() * 60 + now.getMinutes();
-            return (m >= 570 && m <= 690) || (m >= 780 && m <= 900);
-        }
-        function formatMoney(val) { return (val >= 0 ? '+' : '') + val.toFixed(2); }
-        function getTodayStr() {
-            const now = new Date();
-            return now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
-        }
+        const arrow = d.change > 0 ? '▲' : d.change < 0 ? '▼' : '';
+        const changeClass = d.change > 0 ? 'profit-positive' : d.change < 0 ? 'profit-negative' : 'neutral';
+        html += `<div class="index-metric-card">
+          <div class="index-metric-name">${item.name}</div>
+          <div class="index-metric-price ${changeClass}">${d.price.toFixed(2)}</div>
+          <div class="index-metric-change ${changeClass}">${arrow} ${Math.abs(d.changePercent).toFixed(2)}%</div>
+        </div>`;
+      });
+      indexGrid.innerHTML = html;
+    } catch (e) {
+      indexGrid.innerHTML = '<div class="index-metric-card"><div class="index-metric-name">加载失败</div></div>';
+    }
+  }
 
-        function loadOfficialCache() {
-            try {
-                const stored = localStorage.getItem(OFFICIAL_CACHE_KEY);
-                if (stored) {
-                    officialDataCache = JSON.parse(stored);
-                    const today = getTodayStr();
-                    for (const code in officialDataCache) {
-                        if (officialDataCache[code].date !== today) delete officialDataCache[code];
-                    }
-                }
-            } catch (e) { officialDataCache = {}; }
-        }
-        function saveOfficialCache() { localStorage.setItem(OFFICIAL_CACHE_KEY, JSON.stringify(officialDataCache)); }
-        function loadManualOrder() {
-            try { manualOrder = JSON.parse(localStorage.getItem(MANUAL_ORDER_KEY)) || []; } catch { manualOrder = []; }
-        }
-        function saveManualOrder() { localStorage.setItem(MANUAL_ORDER_KEY, JSON.stringify(manualOrder)); }
+  function triggerIconGlow(iconElement) {
+    if (!iconElement) return;
+    iconElement.classList.add('glow');
+    iconElement.addEventListener('animationend', () => iconElement.classList.remove('glow'), { once: true });
+  }
 
-        async function fetchOfficialData(code) {
-            const today = getTodayStr();
-            if (officialDataCache[code] && officialDataCache[code].date === today) return officialDataCache[code];
-            try {
-                const targetUrl = `https://capsule-tau.vercel.app/api/netvalue?code=${code}`;
-                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-                const resp = await fetch(proxyUrl);
-                if (!resp.ok) return null;
-                const data = await resp.json();
-                if (data) { data.date = today; officialDataCache[code] = data; saveOfficialCache(); }
-                return data;
-            } catch (e) { return null; }
-        }
+  function getManualOrderArray() {
+    if (manualOrder.length === watchlist.length && manualOrder.every(c => watchlist.includes(c))) return [...manualOrder];
+    return [...watchlist];
+  }
 
-        async function fetchIndexData() {
-            try {
-                const INDEX_CODES = [
-                    { code: 'sh000001', name: '上证指数' },{ code: 'sz399001', name: '深证成指' },
-                    { code: 'sz399006', name: '创业板指' },{ code: 'sh000688', name: '科创50' },
-                    { code: 'sh000300', name: '沪深300' },{ code: 'sh000905', name: '中证500' },
-                    { code: 'sh000852', name: '中证1000' },{ code: 'sh000016', name: '上证50' }
-                ];
-                const codes = INDEX_CODES.map(i => `s_${i.code}`).join(',');
-                const resp = await fetch(`https://qt.gtimg.cn/q=${codes}`);
-                const text = await resp.text();
-                const lines = text.split('\n').filter(line => line.includes('='));
-                const map = {};
-                lines.forEach(line => {
-                    const m = line.match(/v_s_(\w+)="(.+)"/);
-                    if (!m) return;
-                    const raw = m[2].split('~');
-                    if (raw.length < 5) return;
-                    map[m[1]] = { price: parseFloat(raw[3]), change: parseFloat(raw[4]), changePercent: parseFloat(raw[5]) };
-                });
-                let html = '';
-                INDEX_CODES.forEach(item => {
-                    const d = map[item.code];
-                    if (!d || isNaN(d.price)) {
-                        html += `<div class="index-card"><span class="index-name">${item.name}</span><span class="index-price">--</span><span class="index-change" style="color:var(--text-tertiary)">--</span></div>`;
-                        return;
-                    }
-                    const cls = d.change > 0 ? 'up' : d.change < 0 ? 'down' : '';
-                    const arrow = d.change > 0 ? '▲' : d.change < 0 ? '▼' : '';
-                    const color = d.change > 0 ? 'var(--up-color)' : d.change < 0 ? 'var(--down-color)' : 'var(--text-tertiary)';
-                    html += `<div class="index-card">
-                        <span class="index-name">${item.name}</span>
-                        <span class="index-price">${d.price.toFixed(2)}</span>
-                        <span class="index-change" style="color:${color}">${arrow} ${Math.abs(d.changePercent).toFixed(2)}%</span>
-                    </div>`;
-                });
-                indexList.innerHTML = html;
-            } catch (e) {
-                indexList.innerHTML = '<div class="index-card"><span style="color:var(--text-tertiary)">指数加载失败</span></div>';
-            }
-        }
-
-        function triggerIconGlow(iconElement) {
-            if (!iconElement) return;
-            iconElement.classList.add('glow');
-            iconElement.addEventListener('animationend', () => iconElement.classList.remove('glow'), { once: true });
-        }
-
-        function loadWatchlist() {
-            try { watchlist = JSON.parse(localStorage.getItem(STORAGE_WATCHLIST)) || []; } catch { watchlist = []; }
-            watchlist = [...new Set(watchlist.filter(c => /^\d{6}$/.test(c)))];
-        }
-        function saveWatchlist() { localStorage.setItem(STORAGE_WATCHLIST, JSON.stringify(watchlist)); }
-        function loadHoldings() { try { holdings = JSON.parse(localStorage.getItem(STORAGE_HOLDINGS)) || {}; } catch { holdings = {}; } }
-        function saveHoldings() { localStorage.setItem(STORAGE_HOLDINGS, JSON.stringify(holdings)); }
-        function loadCache() {
-            try { const c = JSON.parse(localStorage.getItem(CACHE_KEY)); if (c) { fundDataCache = c; for (let k in c) if (c[k]?.gsz) previousValuations[k] = c[k].gsz; } } catch {}
-        }
-        function saveCache() { localStorage.setItem(CACHE_KEY, JSON.stringify(fundDataCache)); }
-
-        const INDUSTRY_COLORS = {
-            '白酒': { bg: 'rgba(255,180,100,0.2)', color: '#ffb464', border: 'rgba(255,180,100,0.4)' },
-            '医药': { bg: 'rgba(100,200,255,0.2)', color: '#64c8ff', border: 'rgba(100,200,255,0.4)' },
-            '新能源': { bg: 'rgba(100,255,150,0.2)', color: '#64ff96', border: 'rgba(100,255,150,0.4)' },
-            '科技': { bg: 'rgba(180,130,255,0.2)', color: '#b482ff', border: 'rgba(180,130,255,0.4)' },
-            '消费': { bg: 'rgba(255,150,150,0.2)', color: '#ff9696', border: 'rgba(255,150,150,0.4)' },
-            '军工': { bg: 'rgba(150,180,220,0.2)', color: '#96b4dc', border: 'rgba(150,180,220,0.4)' },
-            '金融': { bg: 'rgba(220,200,100,0.2)', color: '#dcc864', border: 'rgba(220,200,100,0.4)' },
-            '地产': { bg: 'rgba(200,160,120,0.2)', color: '#c8a078', border: 'rgba(200,160,120,0.4)' },
-            '传媒': { bg: 'rgba(255,180,200,0.2)', color: '#ffb4c8', border: 'rgba(255,180,200,0.4)' },
-            '汽车': { bg: 'rgba(120,200,220,0.2)', color: '#78c8dc', border: 'rgba(120,200,220,0.4)' },
-            '周期': { bg: 'rgba(200,180,140,0.2)', color: '#c8b48c', border: 'rgba(200,180,140,0.4)' },
-            '计算机': { bg: 'rgba(140,160,255,0.2)', color: '#8ca0ff', border: 'rgba(140,160,255,0.4)' },
-            '环保': { bg: 'rgba(100,220,150,0.2)', color: '#64dc96', border: 'rgba(100,220,150,0.4)' },
-            '教育': { bg: 'rgba(255,200,120,0.2)', color: '#ffc878', border: 'rgba(255,200,120,0.4)' },
-            '交通': { bg: 'rgba(150,200,200,0.2)', color: '#96c8c8', border: 'rgba(150,200,200,0.4)' },
-            '能源': { bg: 'rgba(255,150,100,0.2)', color: '#ff9664', border: 'rgba(255,150,100,0.4)' },
-            '指数': { bg: 'rgba(180,180,200,0.2)', color: '#b4b4c8', border: 'rgba(180,180,200,0.4)' },
-            '债券': { bg: 'rgba(200,200,160,0.2)', color: '#c8c8a0', border: 'rgba(200,200,160,0.4)' },
-            '混合': { bg: 'rgba(220,180,200,0.2)', color: '#dcb4c8', border: 'rgba(220,180,200,0.4)' },
-            '量化': { bg: 'rgba(160,200,180,0.2)', color: '#a0c8b4', border: 'rgba(160,200,180,0.4)' },
-            '红利': { bg: 'rgba(255,200,150,0.2)', color: '#ffc896', border: 'rgba(255,200,150,0.4)' },
-            'QDII': { bg: 'rgba(150,180,255,0.2)', color: '#96b4ff', border: 'rgba(150,180,255,0.4)' }
-        };
-        const INDUSTRY_KEYWORDS = [
-            { keys:['白酒','酒'], tag:'白酒' },{ keys:['医疗','医药','健康','生物','医'], tag:'医药' },
-            { keys:['新能源','光伏','锂电','电池','碳中和'], tag:'新能源' },{ keys:['科技','芯片','半导体','电子','5G','通信','物联网'], tag:'科技' },
-            { keys:['消费','食品','饮料','农业','粮食'], tag:'消费' },{ keys:['军工','国防','航天','军事'], tag:'军工' },
-            { keys:['证券','券商','银行','金融','保险'], tag:'金融' },{ keys:['地产','房地产','基建','建材'], tag:'地产' },
-            { keys:['传媒','影视','娱乐','文化'], tag:'传媒' },{ keys:['汽车','整车','新能源车','智能汽车'], tag:'汽车' },
-            { keys:['有色','钢铁','煤炭','化工','材料','稀土','石油'], tag:'周期' },{ keys:['计算机','软件','人工智能','大数据','云'], tag:'计算机' },
-            { keys:['环保','环境','低碳'], tag:'环保' },{ keys:['教育','培训'], tag:'教育' },{ keys:['旅游','酒店','航空','运输','物流'], tag:'交通' },
-            { keys:['电力','公用事业','能源'], tag:'能源' },{ keys:['指数','300','500','创业板','科创','深证','上证','中证','沪深'], tag:'指数' },
-            { keys:['债','债券','纯债','中短债'], tag:'债券' },{ keys:['混合','灵活'], tag:'混合' },{ keys:['量化','对冲'], tag:'量化' },{ keys:['红利','高股息'], tag:'红利' },
-            { keys:['QDII','海外','纳斯达克','标普','道琼斯','全球','德国','日本','亚太','恒生'], tag:'QDII' }
-        ];
-        function getIndustry(name) {
-            if (!name) return '';
-            for (const item of INDUSTRY_KEYWORDS) for (const key of item.keys) if (name.includes(key)) return item.tag;
-            return '';
-        }
-
-        function fetchSingle(code) {
-            return new Promise((resolve, reject) => {
-                const sid = 'jsonp-' + code;
-                document.getElementById(sid)?.remove();
-                const s = document.createElement('script');
-                s.id = sid; s.src = FUND_API + code + '.js?rt=' + Date.now();
-                let tid = setTimeout(() => { cleanup(); reject(new Error('超时')); }, 8000);
-                if (!window._jsonpCB) window._jsonpCB = {};
-                window._jsonpCB[code] = (data) => { cleanup(); resolve(data); };
-                function cleanup() { clearTimeout(tid); if (s.parentNode) s.remove(); delete window._jsonpCB[code]; }
-                s.onerror = () => { cleanup(); reject(new Error('网络错误')); };
-                document.head.appendChild(s);
-            });
-        }
-        window.jsonpgz = (d) => { if (d?.fundcode && window._jsonpCB?.[d.fundcode]) window._jsonpCB[d.fundcode](d); };
-
-        function getManualOrderArray() {
-            if (manualOrder.length === watchlist.length && manualOrder.every(c => watchlist.includes(c))) {
-                return [...manualOrder];
-            }
-            return [...watchlist];
-        }
-
-        function renderWatchlist() {
-            if (!watchlist.length) {
-                fundList.innerHTML = '';
-                emptyState.style.display = 'block';
-                return;
-            }
-            emptyState.style.display = 'none';
-
-            let displayOrder;
-            if (isEditMode) {
-                displayOrder = getManualOrderArray();
-            } else {
-                const manual = getManualOrderArray();
-                if (sortMode === 'change-desc' || sortMode === 'change-asc') {
-                    displayOrder = [...manual].sort((a, b) => {
-                        const za = parseFloat(fundDataCache[a]?.gszzl) || 0;
-                        const zb = parseFloat(fundDataCache[b]?.gszzl) || 0;
-                        return sortMode === 'change-desc' ? zb - za : za - zb;
-                    });
-                } else {
-                    displayOrder = manual;
-                }
-            }
-
-            fundList.innerHTML = displayOrder.map((code, index) => {
-                const d = fundDataCache[code];
-                const name = d?.name || '加载中...';
-                const gszzl = d?.gszzl != null ? parseFloat(d.gszzl) : null;
-                const cls = gszzl === null ? 'zero' : (gszzl > 0 ? 'up' : 'down');
-                const ind = getIndustry(name);
-                let tagHtml = '';
-                if (ind && INDUSTRY_COLORS[ind]) {
-                    const c = INDUSTRY_COLORS[ind];
-                    tagHtml = `<span class="industry-tag" style="background:${c.bg}; color:${c.color}; border-color:${c.border};">${ind}</span>`;
-                }
-
-                const editActionsHtml = isEditMode ? `
-                    <div class="edit-actions show">
-                        <button class="edit-btn move-up-btn" data-code="${code}">▲</button>
-                        <button class="edit-btn move-down-btn" data-code="${code}">▼</button>
-                        <button class="edit-btn delete-btn" data-code="${code}">✕</button>
-                    </div>` : '';
-
-                return `<div class="swipe-wrapper" data-code="${code}">
-                    <div class="swipe-content ${cls}">
-                        <div class="fund-card-left">${tagHtml}<span class="fund-name">${escapeHTML(name)}</span><span class="fund-code">${code}</span></div>
-                        <span class="change-percent ${cls}">${gszzl !== null ? (gszzl>=0?'+':'')+gszzl.toFixed(2)+'%' : '--'}</span>
-                        ${editActionsHtml}
-                    </div>
-                    <div class="swipe-delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg><span>删除</span></div>
-                </div>`;
-            }).join('');
-
-            if (isEditMode) {
-                fundList.querySelectorAll('.move-up-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const code = btn.dataset.code;
-                        moveItemUp(code);
-                    });
-                });
-                fundList.querySelectorAll('.move-down-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const code = btn.dataset.code;
-                        moveItemDown(code);
-                    });
-                });
-                fundList.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const code = btn.dataset.code;
-                        removeWatchlist(code);
-                    });
-                });
-            } else {
-                bindSwipeEvents();
-            }
-        }
-
-        function moveItemUp(code) {
-            const arr = getManualOrderArray();
-            const idx = arr.indexOf(code);
-            if (idx <= 0) return;
-            [arr[idx-1], arr[idx]] = [arr[idx], arr[idx-1]];
-            manualOrder = arr;
-            saveManualOrder();
-            renderWatchlist();
-        }
-        function moveItemDown(code) {
-            const arr = getManualOrderArray();
-            const idx = arr.indexOf(code);
-            if (idx < 0 || idx >= arr.length-1) return;
-            [arr[idx], arr[idx+1]] = [arr[idx+1], arr[idx]];
-            manualOrder = arr;
-            saveManualOrder();
-            renderWatchlist();
-        }
-
-        function bindSwipeEvents() {
-            const wrappers = fundList.querySelectorAll('.swipe-wrapper');
-            wrappers.forEach(wrapper => {
-                wrapper.addEventListener('touchstart', handleTouchStart, { passive: false });
-                wrapper.addEventListener('touchmove', handleTouchMove, { passive: false });
-                wrapper.addEventListener('touchend', handleTouchEnd);
-                wrapper.addEventListener('touchcancel', handleTouchEnd);
-            });
-        }
-
-        function handleTouchStart(e) {
-            if (isEditMode) return;
-            const wrapper = e.currentTarget;
-            if (openedSwipe && openedSwipe !== wrapper) {
-                closeSwipe(openedSwipe);
-                openedSwipe = null;
-            }
-            const touch = e.touches[0];
-            swipeStartX = touch.clientX;
-            swipeStartY = touch.clientY;
-            swipeCurrentX = 0;
-            isSwiping = false;
-        }
-
-        function handleTouchMove(e) {
-            if (isEditMode) return;
-            const touch = e.touches[0];
-            const deltaX = touch.clientX - swipeStartX;
-            const deltaY = touch.clientY - swipeStartY;
-            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
-                e.preventDefault();
-                isSwiping = true;
-                swipeCurrentX = Math.min(0, Math.max(-80, deltaX));
-                const content = e.currentTarget.querySelector('.swipe-content');
-                if (content) content.style.transform = `translateX(${swipeCurrentX}px)`;
-                const delBtn = e.currentTarget.querySelector('.swipe-delete');
-                if (delBtn) {
-                    if (swipeCurrentX < -40) delBtn.classList.add('active');
-                    else delBtn.classList.remove('active');
-                }
-            }
-        }
-
-        function handleTouchEnd(e) {
-            if (isEditMode) return;
-            const wrapper = e.currentTarget;
-            if (!isSwiping) return;
-            isSwiping = false;
-            const content = wrapper.querySelector('.swipe-content');
-            if (swipeCurrentX < -40) {
-                if (content) content.style.transform = 'translateX(-80px)';
-                const delBtn = wrapper.querySelector('.swipe-delete');
-                if (delBtn) delBtn.classList.add('active');
-                if (openedSwipe && openedSwipe !== wrapper) closeSwipe(openedSwipe);
-                openedSwipe = wrapper;
-            } else {
-                if (content) content.style.transform = 'translateX(0)';
-                const delBtn = wrapper.querySelector('.swipe-delete');
-                if (delBtn) delBtn.classList.remove('active');
-                openedSwipe = null;
-            }
-        }
-
-        function closeSwipe(wrapper) {
-            if (!wrapper) return;
-            const content = wrapper.querySelector('.swipe-content');
-            if (content) content.style.transform = 'translateX(0)';
-            const delBtn = wrapper.querySelector('.swipe-delete');
-            if (delBtn) delBtn.classList.remove('active');
-        }
-
-        fundList.addEventListener('click', (e) => {
-            if (isEditMode) return;
-            const deleteBtn = e.target.closest('.swipe-delete');
-            if (deleteBtn && deleteBtn.classList.contains('active')) {
-                const wrapper = deleteBtn.closest('.swipe-wrapper');
-                if (wrapper) {
-                    removeWatchlist(wrapper.dataset.code);
-                    openedSwipe = null;
-                }
-            }
+  function renderWatchlist() {
+    if (!watchlist.length) { fundList.innerHTML = ''; emptyState.style.display = 'block'; return; }
+    emptyState.style.display = 'none';
+    let displayOrder;
+    if (isEditMode) displayOrder = getManualOrderArray();
+    else {
+      const manual = getManualOrderArray();
+      if (sortMode === 'change-desc' || sortMode === 'change-asc') {
+        displayOrder = [...manual].sort((a, b) => {
+          const za = parseFloat(fundDataCache[a]?.gszzl) || 0;
+          const zb = parseFloat(fundDataCache[b]?.gszzl) || 0;
+          return sortMode === 'change-desc' ? zb - za : za - zb;
         });
+      } else displayOrder = manual;
+    }
 
-        document.addEventListener('touchstart', (e) => {
-            if (isEditMode) return;
-            if (openedSwipe && !e.target.closest('.swipe-wrapper')) {
-                closeSwipe(openedSwipe);
-                openedSwipe = null;
-            }
-        }, { passive: true });
+    fundList.innerHTML = displayOrder.map((code) => {
+      const d = fundDataCache[code];
+      const rawName = d?.name || '加载中...';
+      const displayName = rawName.length > 7 ? rawName.slice(0, 7) + '…' : rawName;
+      const gszzl = d?.gszzl != null ? parseFloat(d.gszzl) : null;
+      const cls = gszzl === null ? 'zero' : (gszzl > 0 ? 'up' : 'down');
+      const ind = getIndustry(rawName);
+      let tagHtml = '';
+      if (ind && INDUSTRY_COLORS[ind]) {
+        const c = INDUSTRY_COLORS[ind];
+        tagHtml = `<span class="industry-tag" style="background:${c.bg}; color:${c.color}; border-color:${c.border};">${ind}</span>`;
+      }
+      const editActionsHtml = isEditMode ? `
+        <div class="edit-actions show">
+          <button class="edit-btn move-up-btn" data-code="${code}">▲</button>
+          <button class="edit-btn move-down-btn" data-code="${code}">▼</button>
+        </div>` : '';
+      return `<div class="swipe-wrapper" data-code="${code}">
+        <div class="swipe-content ${cls}">
+          <div class="fund-card-left">${tagHtml}<span class="fund-name">${escapeHTML(displayName)}</span><span class="fund-code">${code}</span></div>
+          <span class="change-percent ${cls}">${gszzl !== null ? (gszzl>=0?'+':'')+gszzl.toFixed(2)+'%' : '--'}</span>
+          ${editActionsHtml}
+        </div>
+        <div class="swipe-delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg><span>删除</span></div>
+      </div>`;
+    }).join('');
 
-        function updateWatchlistCard(code) {
-            if (isEditMode) return;
-            const wrapper = document.querySelector(`.swipe-wrapper[data-code="${code}"]`);
-            if (!wrapper) return;
-            const d = fundDataCache[code];
-            if (!d) return;
-            const gszzl = d.gszzl != null ? parseFloat(d.gszzl) : null;
-            const cls = gszzl === null ? 'zero' : (gszzl > 0 ? 'up' : 'down');
-            const content = wrapper.querySelector('.swipe-content');
-            if (content) {
-                content.className = 'swipe-content ' + cls;
-                content.querySelector('.fund-name').textContent = d.name || '未知';
-                const chEl = content.querySelector('.change-percent');
-                chEl.textContent = gszzl !== null ? (gszzl>=0?'+':'')+gszzl.toFixed(2)+'%' : '--';
-                chEl.className = 'change-percent ' + cls;
-            }
+    if (isEditMode) {
+      fundList.querySelectorAll('.move-up-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); moveItemUp(btn.dataset.code); }));
+      fundList.querySelectorAll('.move-down-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); moveItemDown(btn.dataset.code); }));
+    }
+  }
+
+  function moveItemUp(code) {
+    const arr = getManualOrderArray(); const idx = arr.indexOf(code);
+    if (idx <= 0) return;
+    [arr[idx-1], arr[idx]] = [arr[idx], arr[idx-1]];
+    manualOrder = arr; saveManualOrder(); renderWatchlist();
+  }
+  function moveItemDown(code) {
+    const arr = getManualOrderArray(); const idx = arr.indexOf(code);
+    if (idx < 0 || idx >= arr.length-1) return;
+    [arr[idx], arr[idx+1]] = [arr[idx+1], arr[idx]];
+    manualOrder = arr; saveManualOrder(); renderWatchlist();
+  }
+
+  function closeSwipe(wrapper) {
+    if (!wrapper) return;
+    const content = wrapper.querySelector('.swipe-content');
+    if (content) content.style.transform = 'translateX(0)';
+    const delBtn = wrapper.querySelector('.swipe-delete');
+    if (delBtn) delBtn.classList.remove('active');
+  }
+
+  fundList.addEventListener('touchstart', (e) => {
+    if (isEditMode) return;
+    const wrapper = e.target.closest('.swipe-wrapper');
+    if (!wrapper) return;
+    if (openedSwipe && openedSwipe !== wrapper) { closeSwipe(openedSwipe); openedSwipe = null; }
+    const touch = e.touches[0]; swipeStartX = touch.clientX; swipeStartY = touch.clientY; swipeCurrentX = 0; isSwiping = false;
+  }, { passive: false });
+
+  fundList.addEventListener('touchmove', (e) => {
+    if (isEditMode) return;
+    const wrapper = e.target.closest('.swipe-wrapper');
+    if (!wrapper) return;
+    const touch = e.touches[0]; const deltaX = touch.clientX - swipeStartX; const deltaY = touch.clientY - swipeStartY;
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+      e.preventDefault(); isSwiping = true;
+      swipeCurrentX = Math.min(0, Math.max(-80, deltaX));
+      const content = wrapper.querySelector('.swipe-content');
+      if (content) content.style.transform = `translateX(${swipeCurrentX}px)`;
+      const delBtn = wrapper.querySelector('.swipe-delete');
+      if (delBtn) { if (swipeCurrentX < -40) delBtn.classList.add('active'); else delBtn.classList.remove('active'); }
+    }
+  }, { passive: false });
+
+  fundList.addEventListener('touchend', (e) => {
+    if (isEditMode) return;
+    const wrapper = e.target.closest('.swipe-wrapper');
+    if (!wrapper || !isSwiping) return;
+    isSwiping = false;
+    const content = wrapper.querySelector('.swipe-content');
+    if (swipeCurrentX < -40) {
+      if (content) content.style.transform = 'translateX(-80px)';
+      const delBtn = wrapper.querySelector('.swipe-delete'); if (delBtn) delBtn.classList.add('active');
+      if (openedSwipe && openedSwipe !== wrapper) closeSwipe(openedSwipe);
+      openedSwipe = wrapper;
+    } else {
+      if (content) content.style.transform = 'translateX(0)';
+      const delBtn = wrapper.querySelector('.swipe-delete'); if (delBtn) delBtn.classList.remove('active');
+      openedSwipe = null;
+    }
+  });
+
+  fundList.addEventListener('click', (e) => {
+    if (isEditMode) return;
+    const deleteBtn = e.target.closest('.swipe-delete');
+    if (deleteBtn && deleteBtn.classList.contains('active')) {
+      const wrapper = deleteBtn.closest('.swipe-wrapper');
+      if (wrapper) { removeWatchlist(wrapper.dataset.code); openedSwipe = null; }
+    }
+  });
+
+  document.addEventListener('touchstart', (e) => {
+    if (isEditMode) return;
+    if (openedSwipe && !e.target.closest('.swipe-wrapper')) { closeSwipe(openedSwipe); openedSwipe = null; }
+  }, { passive: true });
+
+  function updateTimeDisplay() {
+    const now = new Date();
+    const timeStr = now.toLocaleString('zh-CN', { hour12: false, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+    headerTime.textContent = timeStr; holdingsUpdateTime.textContent = timeStr;
+  }
+
+  function addWatchlist(code) {
+    code = String(code).trim();
+    if (!/^\d{6}$/.test(code)) return showToast('请输入6位数字代码','error'), false;
+    if (watchlist.includes(code)) return showToast('已存在','error'), false;
+    watchlist.push(code); saveWatchlist(); fundDataCache[code] = null;
+    if (!manualOrder.includes(code)) { manualOrder.push(code); saveManualOrder(); }
+    renderWatchlist();
+    fetchAndUpdate(code).then(() => { renderWatchlist(); saveCache(); scheduleRefresh(); });
+    showToast('已添加','success'); return true;
+  }
+  function removeWatchlist(code) {
+    const idx = watchlist.indexOf(code); if (idx < 0) return;
+    watchlist.splice(idx, 1); saveWatchlist(); delete fundDataCache[code]; saveCache();
+    manualOrder = manualOrder.filter(c => c !== code); saveManualOrder();
+    renderWatchlist(); scheduleRefresh(); showToast('已移除');
+  }
+
+  function syncHoldingsToWatchlist() {
+    const codes = Object.keys(holdings);
+    if (codes.length === 0) return showToast('没有持仓可同步','error');
+    let added = 0;
+    codes.forEach(code => { if (!watchlist.includes(code)) { watchlist.push(code); fundDataCache[code] = null; added++; } });
+    if (added === 0) return showToast('持仓已在自选中');
+    saveWatchlist(); renderWatchlist();
+    codes.forEach(code => { if (!fundDataCache[code] || fundDataCache[code] === null) fetchAndUpdate(code); });
+    scheduleRefresh(); showToast(`已同步 ${added} 只基金`);
+  }
+
+  async function fetchAndUpdate(code) {
+    try {
+      const d = await fetchSingle(code);
+      fundDataCache[code] = { fundcode: d.fundcode, name: d.name || '未知', dwjz: d.dwjz, gsz: d.gsz, gszzl: d.gszzl, gztime: d.gztime || '' };
+    } catch { fundDataCache[code] = { ...fundDataCache[code], _error: true, name: fundDataCache[code]?.name || '获取失败' }; }
+  }
+
+  async function fetchAllFunds() {
+    const allCodes = [...new Set([...watchlist, ...Object.keys(holdings)])];
+    if (!allCodes.length) { renderWatchlist(); renderHoldings(); return; }
+    const queue = [...allCodes]; const tasks = [];
+    while (queue.length) { const batch = queue.splice(0, MAX_CON); tasks.push(...batch.map(fetchAndUpdate)); await Promise.allSettled(tasks); tasks.length = 0; }
+    renderWatchlist(); renderHoldings(); saveCache(); updateTimeDisplay();
+    const currentPage = watchlistPage.classList.contains('active') ? 'watchlist' : 'holdings';
+    triggerIconGlow(currentPage === 'watchlist' ? watchlistHeaderIcon : holdingsHeaderIcon);
+  }
+
+  function scheduleRefresh() {
+    clearTimeout(refreshTimer);
+    const interval = isTradingTime() ? REFRESH_TRADING : REFRESH_IDLE;
+    refreshTimer = setTimeout(() => { fetchAllFunds().then(scheduleRefresh); }, interval);
+  }
+  function refreshAllData() { return fetchAllFunds().then(scheduleRefresh); }
+
+  async function renderHoldings() {
+    const codes = Object.keys(holdings);
+    if (codes.length === 0) {
+      holdingsList.innerHTML = '<div class="empty-state">暂无持仓，点击 + 添加</div>';
+      updateSummary({});
+      return;
+    }
+
+    Promise.allSettled(codes.map(code => fetchSingle(code).then(d => {
+      fundDataCache[code] = { fundcode: code, name: d.name, gsz: d.gsz, gszzl: d.gszzl, dwjz: d.dwjz, gztime: d.gztime };
+    }).catch(() => {}))).then(async () => {
+      const officialResults = await Promise.all(codes.map(fetchOfficialData));
+      let html = '', totalAsset = 0, todayProfitSum = 0, totalProfitSum = 0;
+      for (let i = 0; i < codes.length; i++) {
+        const code = codes[i]; const h = holdings[code]; const d = fundDataCache[code] || {}; const od = officialResults[i];
+        let gsz, dwjz, gszzl;
+        if (od && od.updated && !isNaN(od.officialNetValue)) {
+          gsz = od.officialNetValue; dwjz = parseFloat(d.dwjz) || 0;
+          gszzl = (typeof od.officialChange === 'number' && !isNaN(od.officialChange)) ? od.officialChange : (parseFloat(d.gszzl) || 0);
+        } else {
+          gsz = parseFloat(d.gsz) || 0; dwjz = parseFloat(d.dwjz) || 0; gszzl = parseFloat(d.gszzl) || 0;
         }
+        const cost = parseFloat(h.cost) || 0; const shares = parseFloat(h.shares) || 0;
+        const currentVal = gsz * shares; const dayProfit = shares * dwjz * (gszzl / 100); const totalP = (gsz - cost) * shares;
+        totalAsset += currentVal; todayProfitSum += dayProfit; totalProfitSum += totalP;
+        const dayYieldRate = gszzl; const totalYieldRate = cost ? ((gsz - cost) / cost * 100) : 0;
+        const cls = gszzl > 0 ? 'up' : gszzl < 0 ? 'down' : 'zero';
+        const profitClass = (v) => v >= 0 ? 'profit-positive' : 'profit-negative';
+        const updated = (od && od.updated) || false;
+        html += `<div class="holding-card ${cls}" data-code="${code}">
+          <div class="holding-header"><div class="holding-header-left"><span class="update-dot ${updated ? 'updated' : ''}"></span><span class="holding-name">${escapeHTML(h.name || d.name || code)}</span><span class="holding-code">${code}</span></div><span class="holding-amount">${currentVal.toFixed(2)}</span></div>
+          <div class="metrics-row">
+            <div class="metric-card"><span class="metric-label">今日涨幅</span><span class="metric-value ${profitClass(gszzl)}">${gszzl>=0?'+':''}${gszzl.toFixed(2)}%</span></div>
+            <div class="metric-card"><span class="metric-label">日收益</span><span class="metric-value ${profitClass(dayProfit)}">${formatMoney(dayProfit)}</span></div>
+            <div class="metric-card"><span class="metric-label">持有收益</span><span class="metric-value ${profitClass(totalP)}">${formatMoney(totalP)}</span></div>
+            <div class="metric-card"><span class="metric-label">持有收益率</span><span class="metric-value ${profitClass(totalYieldRate)}">${totalYieldRate>=0?'+':''}${totalYieldRate.toFixed(2)}%</span></div>
+          </div>
+        </div>`;
+      }
+      holdingsList.innerHTML = html;
+      updateSummary({ totalAsset, todayProfit: todayProfitSum, totalProfit: totalProfitSum });
+      if (isBulkEditing) enterBulkEditMode();
+    });
+  }
 
-        function updateTimeDisplay() {
-            const now = new Date();
-            const timeStr = now.toLocaleString('zh-CN', { hour12: false, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
-            headerTime.textContent = timeStr;
-            holdingsUpdateTime.textContent = timeStr;
+  function updateSummary({ totalAsset = 0, todayProfit = 0, totalProfit = 0 }) {
+    document.getElementById('totalAsset').textContent = totalAsset.toFixed(2);
+    document.getElementById('todayProfit').textContent = formatMoney(todayProfit);
+    document.getElementById('totalProfit').textContent = formatMoney(totalProfit);
+    document.getElementById('totalAsset').className = 'summary-value neutral';
+    const todayCls = todayProfit >= 0 ? 'profit-positive' : 'profit-negative';
+    const totalCls = totalProfit >= 0 ? 'profit-positive' : 'profit-negative';
+    document.getElementById('todayProfit').className = 'summary-value ' + todayCls;
+    document.getElementById('totalProfit').className = 'summary-value ' + totalCls;
+  }
+
+  function enterBulkEditMode() {
+    document.querySelectorAll('#holdingsList .holding-card').forEach(card => {
+      const code = card.dataset.code;
+      const h = holdings[code];
+      const metrics = card.querySelector('.metrics-row');
+      if (metrics) metrics.style.display = 'none';
+      let editDiv = card.querySelector('.edit-controls');
+      if (!editDiv) { editDiv = document.createElement('div'); editDiv.className = 'edit-controls'; card.appendChild(editDiv); }
+      editDiv.innerHTML = `<input type="number" class="edit-cost" value="${h.cost}" step="any" inputmode="decimal" placeholder="成本"><input type="number" class="edit-shares" value="${h.shares}" step="any" inputmode="decimal" placeholder="份额"><button class="btn danger edit-delete-btn">删除</button>`;
+      editDiv.querySelector('.edit-delete-btn').onclick = (e) => { e.stopPropagation(); if (confirm('确认删除该持仓？')) { delete holdings[code]; saveHoldings(); isBulkEditing = false; btnBulkEdit.classList.remove('edit-active'); renderHoldings(); showToast('已删除'); } };
+    });
+  }
+
+  btnBulkEdit.addEventListener('click', () => {
+    if (isBulkEditing) {
+      document.querySelectorAll('#holdingsList .holding-card').forEach(card => {
+        const code = card.dataset.code;
+        const costInput = card.querySelector('.edit-cost'), shareInput = card.querySelector('.edit-shares');
+        if (costInput && shareInput) {
+          const cost = parseFloat(costInput.value), shares = parseFloat(shareInput.value);
+          if (!isNaN(cost) && cost > 0 && !isNaN(shares) && shares > 0) holdings[code] = { cost, shares, name: holdings[code]?.name || '' };
         }
+        card.querySelector('.edit-controls')?.remove();
+        const metrics = card.querySelector('.metrics-row'); if (metrics) metrics.style.display = '';
+      });
+      saveHoldings(); isBulkEditing = false; btnBulkEdit.classList.remove('edit-active');
+      renderHoldings(); showToast('批量保存成功');
+    } else { isBulkEditing = true; btnBulkEdit.classList.add('edit-active'); enterBulkEditMode(); }
+  });
 
-        function addWatchlist(code) {
-            code = String(code).trim();
-            if (!/^\d{6}$/.test(code)) return showToast('请输入6位数字代码','error'), false;
-            if (watchlist.includes(code)) return showToast('已存在','error'), false;
-            watchlist.push(code); saveWatchlist(); fundDataCache[code] = null;
-            if (!manualOrder.includes(code)) { manualOrder.push(code); saveManualOrder(); }
-            renderWatchlist();
-            fetchAndUpdate(code).then(() => { renderWatchlist(); saveCache(); scheduleRefresh(); });
-            showToast('已添加','success');
-            return true;
-        }
-        function removeWatchlist(code) {
-            const idx = watchlist.indexOf(code);
-            if (idx < 0) return;
-            watchlist.splice(idx, 1); saveWatchlist();
-            delete fundDataCache[code]; saveCache();
-            manualOrder = manualOrder.filter(c => c !== code);
-            saveManualOrder();
-            renderWatchlist(); scheduleRefresh();
-            showToast('已移除');
-        }
+  function getConfigJSON() { return JSON.stringify({ watchlist, holdings, manualOrder }, null, 2); }
+  btnBackup.addEventListener('click', () => { overlay.classList.add('active'); backupSheet.classList.add('active'); });
+  function closeBackupSheet() { overlay.classList.remove('active'); backupSheet.classList.remove('active'); }
+  btnExportSheet.addEventListener('click', () => {
+    const data = getConfigJSON(); const blob = new Blob([data], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'fund_config.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); closeBackupSheet(); showToast('已导出');
+  });
+  btnCopyConfig.addEventListener('click', () => {
+    const data = getConfigJSON();
+    if (navigator.clipboard) { navigator.clipboard.writeText(data).then(() => showToast('已复制')); }
+    else { const ta = document.createElement('textarea'); ta.value = data; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('已复制'); }
+    closeBackupSheet();
+  });
+  btnImportSheet.addEventListener('click', () => { importFile.click(); closeBackupSheet(); });
+  importFile.addEventListener('change', e => {
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (data.watchlist) { watchlist = data.watchlist; saveWatchlist(); }
+        if (data.holdings) { holdings = data.holdings; saveHoldings(); }
+        if (data.manualOrder) { manualOrder = data.manualOrder; saveManualOrder(); }
+        renderWatchlist(); renderHoldings(); refreshAllData(); showToast('导入成功');
+      } catch { showToast('文件格式错误','error'); }
+    };
+    reader.readAsText(file); importFile.value = '';
+  });
 
-        function syncHoldingsToWatchlist() {
-            const codes = Object.keys(holdings);
-            if (codes.length === 0) return showToast('没有持仓可同步','error');
-            let added = 0;
-            codes.forEach(code => {
-                if (!watchlist.includes(code)) { watchlist.push(code); fundDataCache[code] = null; added++; }
-            });
-            if (added === 0) return showToast('持仓已在自选中');
-            saveWatchlist();
-            renderWatchlist();
-            codes.forEach(code => { if (!fundDataCache[code] || fundDataCache[code] === null) fetchAndUpdate(code); });
-            scheduleRefresh();
-            showToast(`已同步 ${added} 只基金`);
-        }
+  btnAddWatchlist.addEventListener('click', () => { overlay.classList.add('active'); bottomSheet.classList.add('active'); inputCode.value = ''; inputCode.focus(); });
+  btnAddHolding.addEventListener('click', () => { overlay.classList.add('active'); holdingSheet.classList.add('active'); holdingCode.value = ''; holdingCost.value = ''; holdingShares.value = ''; });
+  overlay.addEventListener('click', () => { overlay.classList.remove('active'); bottomSheet.classList.remove('active'); holdingSheet.classList.remove('active'); backupSheet.classList.remove('active'); });
+  btnConfirmAdd.addEventListener('click', () => { const code = inputCode.value.trim(); if (addWatchlist(code)) { overlay.classList.remove('active'); bottomSheet.classList.remove('active'); } });
+  confirmAddHoldingSheet.addEventListener('click', () => {
+    const code = holdingCode.value.trim(); const cost = parseFloat(holdingCost.value); const shares = parseFloat(holdingShares.value);
+    if (!/^\d{6}$/.test(code)) return showToast('请输入6位代码', 'error');
+    if (isNaN(cost) || isNaN(shares)) return showToast('请填写完整', 'error');
+    holdings[code] = { name: fundDataCache[code]?.name || '', cost, shares }; saveHoldings();
+    overlay.classList.remove('active'); holdingSheet.classList.remove('active'); renderHoldings(); showToast('已添加持仓');
+  });
 
-        async function fetchAndUpdate(code) {
-            try {
-                const d = await fetchSingle(code);
-                fundDataCache[code] = { fundcode: d.fundcode, name: d.name || '未知', dwjz: d.dwjz, gsz: d.gsz, gszzl: d.gszzl, gztime: d.gztime || '' };
-                previousValuations[code] = d.gsz;
-            } catch {
-                fundDataCache[code] = { ...fundDataCache[code], _error: true, name: fundDataCache[code]?.name || '获取失败' };
-            }
-            updateWatchlistCard(code);
-        }
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelector('.nav-item.active').classList.remove('active'); item.classList.add('active');
+      const page = item.dataset.page;
+      watchlistPage.classList.toggle('active', page === 'watchlist'); holdingsPage.classList.toggle('active', page === 'holdings');
+      if (page === 'holdings') renderHoldings();
+      triggerIconGlow(page === 'watchlist' ? watchlistHeaderIcon : holdingsHeaderIcon);
+    });
+  });
 
-        async function fetchAllFunds() {
-            const allCodes = [...new Set([...watchlist, ...Object.keys(holdings)])];
-            if (!allCodes.length) { renderWatchlist(); renderHoldings(); return; }
-            const queue = [...allCodes];
-            const workers = Array(Math.min(MAX_CON, queue.length)).fill().map(async () => { while (queue.length) await fetchAndUpdate(queue.shift()); });
-            await Promise.allSettled(workers);
-            renderWatchlist(); renderHoldings(); saveCache();
-            updateTimeDisplay();
-            const currentPage = watchlistPage.classList.contains('active') ? 'watchlist' : 'holdings';
-            triggerIconGlow(currentPage === 'watchlist' ? watchlistHeaderIcon : holdingsHeaderIcon);
-        }
+  const SORT_MODES = ['change-desc', 'change-asc', 'manual'];
+  btnSort.addEventListener('click', () => {
+    const currentIdx = SORT_MODES.indexOf(sortMode); sortMode = SORT_MODES[(currentIdx + 1) % SORT_MODES.length];
+    btnSort.classList.remove('desc', 'asc', 'manual');
+    if (sortMode === 'change-desc') btnSort.classList.add('desc'); else if (sortMode === 'change-asc') btnSort.classList.add('asc'); else btnSort.classList.add('manual');
+    renderWatchlist();
+  });
 
-        function scheduleRefresh() {
-            clearTimeout(refreshTimer);
-            const interval = isTradingTime() ? REFRESH_TRADING : REFRESH_IDLE;
-            refreshTimer = setTimeout(() => { fetchAllFunds().then(scheduleRefresh); }, interval);
-        }
+  btnEditWatchlist.addEventListener('click', () => {
+    isEditMode = !isEditMode;
+    if (isEditMode) { btnEditWatchlist.classList.add('edit-active'); if (openedSwipe) { closeSwipe(openedSwipe); openedSwipe = null; } }
+    else btnEditWatchlist.classList.remove('edit-active');
+    renderWatchlist();
+  });
 
-        function refreshAllData() { return fetchAllFunds().then(scheduleRefresh); }
+  btnRefresh.addEventListener('click', () => { btnRefresh.classList.add('refreshing'); setTimeout(() => btnRefresh.classList.remove('refreshing'), 900); refreshAllData(); });
+  btnRefreshHoldings.addEventListener('click', () => { btnRefreshHoldings.classList.add('refreshing'); setTimeout(() => btnRefreshHoldings.classList.remove('refreshing'), 900); refreshAllData(); });
+  btnSyncHoldings.addEventListener('click', syncHoldingsToWatchlist);
 
-        async function renderHoldings() {
-            const codes = Object.keys(holdings);
-            if (codes.length === 0) {
-                holdingsList.innerHTML = '<div class="empty-state">暂无持仓，点击 + 添加</div>';
-                updateSummary({});
-                return;
-            }
+  indexToggle.addEventListener('click', () => {
+    indexExpanded = !indexExpanded;
+    const container = indexGridContainer;
+    if (indexExpanded) {
+      container.style.height = 'auto';
+      const targetHeight = container.offsetHeight;
+      container.style.height = '0px';
+      container.offsetHeight;
+      container.style.height = targetHeight + 'px';
+      indexToggle.classList.add('expanded');
+      const onTransitionEnd = () => { container.style.height = 'auto'; container.removeEventListener('transitionend', onTransitionEnd); };
+      container.addEventListener('transitionend', onTransitionEnd);
+    } else {
+      const currentHeight = container.offsetHeight;
+      container.style.height = currentHeight + 'px';
+      container.offsetHeight;
+      container.style.height = '0px';
+      indexToggle.classList.remove('expanded');
+    }
+  });
 
-            let html = '';
-            let totalAsset = 0, todayProfitSum = 0, totalProfitSum = 0;
-            for (const code of codes) {
-                const h = holdings[code];
-                const d = fundDataCache[code] || {};
-                const cachedOfficial = officialDataCache[code] || {};
-                const name = d.name || h.name || code;
-                const gsz = cachedOfficial.updated ? cachedOfficial.officialNetValue : (parseFloat(d.gsz) || 0);
-                const dwjz = parseFloat(d.dwjz) || 0;
-                const gszzl = cachedOfficial.updated ? cachedOfficial.officialChange : (parseFloat(d.gszzl) || 0);
-                const cost = parseFloat(h.cost) || 0;
-                const shares = parseFloat(h.shares) || 0;
-                const currentVal = gsz * shares;
-                const dayProfit = shares * dwjz * (gszzl / 100);
-                const totalP = (gsz - cost) * shares;
-                totalAsset += currentVal; todayProfitSum += dayProfit; totalProfitSum += totalP;
-            }
-            if (codes.length > 0) {
-                updateSummary({ totalAsset, todayProfit: todayProfitSum, totalProfit: totalProfitSum });
-                holdingsList.innerHTML = codes.map(code => {
-                    const h = holdings[code];
-                    const d = fundDataCache[code] || {};
-                    const cachedOfficial = officialDataCache[code] || {};
-                    const name = d.name || h.name || code;
-                    const gsz = cachedOfficial.updated ? cachedOfficial.officialNetValue : (parseFloat(d.gsz) || 0);
-                    const dwjz = parseFloat(d.dwjz) || 0;
-                    const gszzl = cachedOfficial.updated ? cachedOfficial.officialChange : (parseFloat(d.gszzl) || 0);
-                    const cost = parseFloat(h.cost) || 0;
-                    const shares = parseFloat(h.shares) || 0;
-                    const currentVal = gsz * shares;
-                    const dayProfit = shares * dwjz * (gszzl / 100);
-                    const totalP = (gsz - cost) * shares;
-                    const dayYieldRate = gszzl;
-                    const totalYieldRate = cost ? ((gsz - cost) / cost * 100) : 0;
-                    const cls = gszzl > 0 ? 'up' : gszzl < 0 ? 'down' : 'zero';
-                    const profitClass = (v) => v >= 0 ? 'profit-positive' : 'profit-negative';
-                    const updated = cachedOfficial.updated || false;
-                    return `<div class="holding-card ${cls}" data-code="${code}">
-                        <div class="holding-header">
-                            <div class="holding-header-left">
-                                <span class="update-dot ${updated ? 'updated' : ''}"></span>
-                                <span class="holding-name">${escapeHTML(name)}</span>
-                                <span class="holding-code">${code}</span>
-                            </div>
-                            <span class="holding-amount">${currentVal.toFixed(2)}</span>
-                        </div>
-                        <div class="metrics-row">
-                            <div class="metric-card"><span class="metric-label">今日涨幅</span><span class="metric-value ${profitClass(gszzl)}">${gszzl>=0?'+':''}${gszzl.toFixed(2)}%</span></div>
-                            <div class="metric-card"><span class="metric-label">日收益</span><span class="metric-value ${profitClass(dayProfit)}">${formatMoney(dayProfit)}</span></div>
-                            <div class="metric-card"><span class="metric-label">持有收益</span><span class="metric-value ${profitClass(totalP)}">${formatMoney(totalP)}</span></div>
-                            <div class="metric-card"><span class="metric-label">持有收益率</span><span class="metric-value ${profitClass(totalYieldRate)}">${totalYieldRate>=0?'+':''}${totalYieldRate.toFixed(2)}%</span></div>
-                        </div>
-                    </div>`;
-                }).join('');
-            }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refreshAllData(); });
 
-            Promise.allSettled(codes.map(code => fetchSingle(code).then(d => {
-                fundDataCache[code] = { fundcode: code, name: d.name, gsz: d.gsz, gszzl: d.gszzl, dwjz: d.dwjz, gztime: d.gztime };
-            }).catch(() => {}))).then(async () => {
-                const officialResults = await Promise.all(codes.map(code => fetchOfficialData(code)));
-                let html2 = '';
-                let totalAsset2 = 0, todayProfitSum2 = 0, totalProfitSum2 = 0;
-                for (let i = 0; i < codes.length; i++) {
-                    const code = codes[i];
-                    const h = holdings[code];
-                    const d = fundDataCache[code] || {};
-                    const od = officialResults[i];
-                    const name = d.name || h.name || code;
-                    let gsz2, dwjz2, gszzl2;
-                    if (od && od.updated && !isNaN(od.officialNetValue)) {
-                        gsz2 = od.officialNetValue;
-                        dwjz2 = parseFloat(d.dwjz) || 0;
-                        gszzl2 = (typeof od.officialChange === 'number' && !isNaN(od.officialChange)) ? od.officialChange : (parseFloat(d.gszzl) || 0);
-                    } else {
-                        gsz2 = parseFloat(d.gsz) || 0;
-                        dwjz2 = parseFloat(d.dwjz) || 0;
-                        gszzl2 = parseFloat(d.gszzl) || 0;
-                    }
-                    const cost = parseFloat(h.cost) || 0;
-                    const shares = parseFloat(h.shares) || 0;
-                    const currentVal = gsz2 * shares;
-                    const dayProfit = shares * dwjz2 * (gszzl2 / 100);
-                    const totalP = (gsz2 - cost) * shares;
-                    totalAsset2 += currentVal; todayProfitSum2 += dayProfit; totalProfitSum2 += totalP;
-                    const dayYieldRate = gszzl2;
-                    const totalYieldRate = cost ? ((gsz2 - cost) / cost * 100) : 0;
-                    const cls = gszzl2 > 0 ? 'up' : gszzl2 < 0 ? 'down' : 'zero';
-                    const profitClass = (v) => v >= 0 ? 'profit-positive' : 'profit-negative';
-                    const updated = (od && od.updated) || false;
-                    html2 += `<div class="holding-card ${cls}" data-code="${code}">
-                        <div class="holding-header">
-                            <div class="holding-header-left">
-                                <span class="update-dot ${updated ? 'updated' : ''}"></span>
-                                <span class="holding-name">${escapeHTML(name)}</span>
-                                <span class="holding-code">${code}</span>
-                            </div>
-                            <span class="holding-amount">${currentVal.toFixed(2)}</span>
-                        </div>
-                        <div class="metrics-row">
-                            <div class="metric-card"><span class="metric-label">今日涨幅</span><span class="metric-value ${profitClass(gszzl2)}">${gszzl2>=0?'+':''}${gszzl2.toFixed(2)}%</span></div>
-                            <div class="metric-card"><span class="metric-label">日收益</span><span class="metric-value ${profitClass(dayProfit)}">${formatMoney(dayProfit)}</span></div>
-                            <div class="metric-card"><span class="metric-label">持有收益</span><span class="metric-value ${profitClass(totalP)}">${formatMoney(totalP)}</span></div>
-                            <div class="metric-card"><span class="metric-label">持有收益率</span><span class="metric-value ${profitClass(totalYieldRate)}">${totalYieldRate>=0?'+':''}${totalYieldRate.toFixed(2)}%</span></div>
-                        </div>
-                    </div>`;
-                }
-                holdingsList.innerHTML = html2;
-                updateSummary({ totalAsset: totalAsset2, todayProfit: todayProfitSum2, totalProfit: totalProfitSum2 });
-                if (isBulkEditing) enterBulkEditMode();
-            });
-        }
-
-        function updateSummary({ totalAsset = 0, todayProfit = 0, totalProfit = 0 }) {
-            document.getElementById('totalAsset').textContent = totalAsset.toFixed(2);
-            document.getElementById('todayProfit').textContent = formatMoney(todayProfit);
-            document.getElementById('totalProfit').textContent = formatMoney(totalProfit);
-            document.getElementById('totalAsset').className = 'summary-value neutral';
-            const todayCls = todayProfit >= 0 ? 'profit-positive' : 'profit-negative';
-            const totalCls = totalProfit >= 0 ? 'profit-positive' : 'profit-negative';
-            document.getElementById('todayProfit').className = 'summary-value ' + todayCls;
-            document.getElementById('totalProfit').className = 'summary-value ' + totalCls;
-        }
-
-        function enterBulkEditMode() { /* 保持原样 */ }
-        btnBulkEdit.addEventListener('click', () => { /* 保持原样 */ });
-
-        function getConfigJSON() { return JSON.stringify({ watchlist, holdings, manualOrder }, null, 2); }
-        function openBackupSheet() { overlay.classList.add('active'); backupSheet.classList.add('active'); }
-        function closeBackupSheet() { overlay.classList.remove('active'); backupSheet.classList.remove('active'); }
-        btnBackup.addEventListener('click', openBackupSheet);
-        btnExportSheet.addEventListener('click', () => {
-            const data = getConfigJSON();
-            const blob = new Blob([data], {type:'application/json'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob); a.download = 'fund_config.json';
-            document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            closeBackupSheet(); showToast('已导出');
-        });
-        btnCopyConfig.addEventListener('click', () => {
-            const data = getConfigJSON();
-            if (navigator.clipboard) { navigator.clipboard.writeText(data).then(() => showToast('已复制')); }
-            else { const ta = document.createElement('textarea'); ta.value = data; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('已复制'); }
-            closeBackupSheet();
-        });
-        btnImportSheet.addEventListener('click', () => { importFile.click(); closeBackupSheet(); });
-        importFile.addEventListener('change', e => {
-            const file = e.target.files[0]; if(!file) return;
-            const reader = new FileReader();
-            reader.onload = () => {
-                try {
-                    const data = JSON.parse(reader.result);
-                    if (data.watchlist) { watchlist = data.watchlist; saveWatchlist(); }
-                    if (data.holdings) { holdings = data.holdings; saveHoldings(); }
-                    if (data.manualOrder) { manualOrder = data.manualOrder; saveManualOrder(); }
-                    renderWatchlist(); renderHoldings(); refreshAllData();
-                    showToast('导入成功');
-                } catch { showToast('文件格式错误','error'); }
-            };
-            reader.readAsText(file); importFile.value = '';
-        });
-
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => {
-                document.querySelector('.nav-item.active').classList.remove('active');
-                item.classList.add('active');
-                const page = item.dataset.page;
-                watchlistPage.classList.toggle('active', page === 'watchlist');
-                holdingsPage.classList.toggle('active', page === 'holdings');
-                if (page === 'holdings') renderHoldings();
-                triggerIconGlow(page === 'watchlist' ? watchlistHeaderIcon : holdingsHeaderIcon);
-            });
-        });
-
-        indexToggle.addEventListener('click', () => {
-            indexExpanded = !indexExpanded;
-            if (indexExpanded) {
-                indexList.classList.add('show');
-                indexToggle.classList.add('expanded');
-            } else {
-                indexList.classList.remove('show');
-                indexToggle.classList.remove('expanded');
-            }
-        });
-
-        const SORT_MODES = ['change-desc', 'change-asc', 'manual'];
-        btnSort.addEventListener('click', () => {
-            const currentIdx = SORT_MODES.indexOf(sortMode);
-            sortMode = SORT_MODES[(currentIdx + 1) % SORT_MODES.length];
-            btnSort.classList.remove('desc', 'asc', 'manual');
-            if (sortMode === 'change-desc') btnSort.classList.add('desc');
-            else if (sortMode === 'change-asc') btnSort.classList.add('asc');
-            else btnSort.classList.add('manual');
-            renderWatchlist();
-        });
-
-        btnEditWatchlist.addEventListener('click', () => {
-            isEditMode = !isEditMode;
-            if (isEditMode) {
-                btnEditWatchlist.classList.add('edit-active');
-                if (openedSwipe) { closeSwipe(openedSwipe); openedSwipe = null; }
-            } else {
-                btnEditWatchlist.classList.remove('edit-active');
-            }
-            renderWatchlist();
-        });
-
-        btnRefresh.addEventListener('click', () => { btnRefresh.classList.add('refreshing'); setTimeout(() => btnRefresh.classList.remove('refreshing'), 900); refreshAllData(); });
-        btnRefreshHoldings.addEventListener('click', () => { btnRefreshHoldings.classList.add('refreshing'); setTimeout(() => btnRefreshHoldings.classList.remove('refreshing'), 900); refreshAllData(); });
-        btnSyncHoldings.addEventListener('click', syncHoldingsToWatchlist);
-
-        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refreshAllData(); });
-
-        loadWatchlist(); loadHoldings(); loadCache(); loadOfficialCache(); loadManualOrder();
-        renderWatchlist();
-        refreshAllData().then(() => { updateTimeDisplay(); setInterval(updateTimeDisplay, 60000); });
-        fetchIndexData();
-    })();
+  loadWatchlist(); loadHoldings(); loadCache(); loadOfficialCache(); loadManualOrder();
+  renderWatchlist();
+  refreshAllData().then(() => { updateTimeDisplay(); setInterval(updateTimeDisplay, 60000); });
+  fetchIndexData();
+})();
 </script>
 </body>
 </html>
