@@ -133,6 +133,72 @@
 
     .fund-list { display: flex; flex-direction: column; gap: 6px; padding-bottom: 8px; }
 
+    /* ========== 指数折叠面板 ========== */
+    .index-panel {
+      margin-bottom: 6px;
+    }
+    .index-toggle {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--card-radius-sm);
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .index-toggle .index-toggle-text {
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+    .index-toggle .index-toggle-arrow {
+      font-size: 0.7rem;
+      color: var(--text-tertiary);
+      transition: transform 0.3s ease;
+      display: inline-block;
+    }
+    .index-toggle.expanded .index-toggle-arrow {
+      transform: rotate(180deg);
+    }
+    .index-list {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.35s ease-in-out, opacity 0.35s ease-in-out;
+    }
+    .index-list.show {
+      max-height: 600px;
+      opacity: 1;
+    }
+    .index-card {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px;
+      margin-top: 6px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--card-radius-sm);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+    .index-name {
+      font-weight: 600;
+      font-size: 0.78rem;
+      flex: 1;
+    }
+    .index-price {
+      font-weight: 600;
+      font-size: 0.78rem;
+      margin-right: 10px;
+      text-align: right;
+      min-width: 70px;
+    }
+    .index-change {
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-align: right;
+      min-width: 80px;
+    }
+
+    /* ========== 自选卡片 ========== */
     .swipe-wrapper { position: relative; overflow: hidden; border-radius: var(--card-radius-sm); }
     .swipe-content {
       position: relative; z-index: 2; background: var(--bg-card);
@@ -336,6 +402,16 @@
       </div>
     </header>
     <div class="divider"></div>
+
+    <!-- ========== 指数折叠面板 ========== -->
+    <div class="index-panel">
+      <div class="index-toggle" id="indexToggle">
+        <span class="index-toggle-text">大盘指数</span>
+        <span class="index-toggle-arrow">▼</span>
+      </div>
+      <div class="index-list" id="indexList"></div>
+    </div>
+
     <div class="fund-list" id="fundList"></div>
     <div class="empty-state" id="emptyState" style="display:none;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
@@ -464,10 +540,13 @@
   const importFile        = $('importFile');
   const watchlistHeaderIcon = $('watchlistHeaderIcon');
   const holdingsHeaderIcon  = $('holdingsHeaderIcon');
+  const indexToggle       = $('indexToggle');
+  const indexList         = $('indexList');
 
   let watchlist = [], holdings = {}, fundDataCache = {}, previousValuations = {};
   let refreshTimer = null, toastTimer = null;
   let isSheetOpen = false, sortMode = 'change-desc', isBulkEditing = false;
+  let indexExpanded = false;
 
   const escapeHTML = (str) => { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; };
   function showToast(msg, type = '') {
@@ -496,6 +575,42 @@
     } catch (e) {
       return null;
     }
+  }
+
+  /* 通过 allorigins.win 代理获取指数行情 */
+  async function fetchIndexData() {
+    try {
+      const targetUrl = 'https://capsule-tau.vercel.app/api/index';
+      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+      const resp = await fetch(proxyUrl);
+      if (!resp.ok) return;
+      const data = await resp.json();
+      renderIndex(data);
+    } catch (e) {
+      indexList.innerHTML = '<div class="index-card"><span style="color:var(--text-tertiary)">指数数据加载失败</span></div>';
+    }
+  }
+
+  function renderIndex(data) {
+    if (!data || !Array.isArray(data)) return;
+    let html = '';
+    data.forEach(item => {
+      if (!item || item.price === null) {
+        html += `<div class="index-card"><span class="index-name">${item?.name || '--'}</span><span class="index-price">--</span><span class="index-change" style="color:var(--text-tertiary)">--</span></div>`;
+        return;
+      }
+      const change = item.change || 0;
+      const changePercent = item.changePercent || 0;
+      const cls = change > 0 ? 'up' : change < 0 ? 'down' : 'zero';
+      const arrow = change > 0 ? '▲' : change < 0 ? '▼' : '';
+      const color = change > 0 ? 'var(--up-color)' : change < 0 ? 'var(--down-color)' : 'var(--text-tertiary)';
+      html += `<div class="index-card">
+        <span class="index-name">${escapeHTML(item.name)}</span>
+        <span class="index-price">${item.price.toFixed(2)}</span>
+        <span class="index-change" style="color:${color}">${arrow} ${Math.abs(changePercent).toFixed(2)}%</span>
+      </div>`;
+    });
+    indexList.innerHTML = html || '<div class="index-card"><span>暂无数据</span></div>';
   }
 
   function triggerIconGlow(iconElement) {
@@ -749,6 +864,7 @@
     await Promise.allSettled(workers);
     renderWatchlist(); renderHoldings(); saveCache();
     updateTimeDisplay();
+    fetchIndexData(); // 同时更新指数
     const currentPage = watchlistPage.classList.contains('active') ? 'watchlist' : 'holdings';
     triggerIconGlow(currentPage === 'watchlist' ? watchlistHeaderIcon : holdingsHeaderIcon);
   }
@@ -768,11 +884,9 @@
       updateSummary({});
       return;
     }
-    // 先并发请求所有持仓的日常估值数据
     Promise.allSettled(codes.map(code => fetchSingle(code).then(d => {
       fundDataCache[code] = { fundcode: code, name: d.name, gsz: d.gsz, gszzl: d.gszzl, dwjz: d.dwjz, gztime: d.gztime };
     }).catch(() => {}))).then(async () => {
-      // 并发获取所有持仓的官方净值数据
       const officialResults = await Promise.all(codes.map(code => fetchOfficialData(code)));
       const officialMap = {};
       codes.forEach((code, index) => { officialMap[code] = officialResults[index]; });
@@ -943,6 +1057,18 @@
   btnRefreshHoldings.addEventListener('click', () => { btnRefreshHoldings.classList.add('refreshing'); setTimeout(() => btnRefreshHoldings.classList.remove('refreshing'), 900); refreshAllData(); });
   btnSort.addEventListener('click', () => { sortMode = sortMode === 'change-desc' ? 'change-asc' : 'change-desc'; btnSort.classList.toggle('desc', sortMode === 'change-desc'); btnSort.classList.toggle('asc', sortMode === 'change-asc'); renderWatchlist(); });
   btnSyncHoldings.addEventListener('click', syncHoldingsToWatchlist);
+
+  // ========== 指数面板折叠/展开 ==========
+  indexToggle.addEventListener('click', () => {
+    indexExpanded = !indexExpanded;
+    if (indexExpanded) {
+      indexList.classList.add('show');
+      indexToggle.classList.add('expanded');
+    } else {
+      indexList.classList.remove('show');
+      indexToggle.classList.remove('expanded');
+    }
+  });
 
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => {
