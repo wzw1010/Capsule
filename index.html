@@ -26,7 +26,6 @@
       --down-color: #4dcb7f;
       --down-bg: rgba(77,203,127,0.12);
       --delete-gradient: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
-      /* 统一圆角 */
       --card-radius-sm: 18px;
       --card-radius-md: 20px;
       --card-radius-lg: 24px;
@@ -54,6 +53,7 @@
 
     .app-container { max-width: 520px; margin: 0 auto; padding: 0 14px; }
 
+    /* 底部导航 */
     .bottom-nav {
       position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
       width: 100%; max-width: 520px;
@@ -77,6 +77,7 @@
     .page { display: none; }
     .page.active { display: block; }
 
+    /* 头部 */
     .header {
       display: flex; align-items: center; justify-content: space-between;
       padding: 12px 2px 8px;
@@ -99,12 +100,6 @@
       border-color: rgba(242,99,99,0.35);
     }
     .header-icon:active { transform: scale(0.92); }
-    .header-icon.glow::after {
-      content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.15) 45%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.15) 55%, transparent 60%);
-      animation: iconShine 2s ease-in-out; pointer-events: none;
-    }
-    @keyframes iconShine { 0%{ left:-100%; } 100%{ left:100%; } }
     .header-icon svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; position: relative; z-index: 1; }
     .header-title { font-size: 1.1rem; font-weight: 700; }
     .header-subtitle { display: flex; align-items: center; gap: 6px; font-size: 0.6rem; color: var(--text-tertiary); }
@@ -143,7 +138,7 @@
 
     .fund-list { display: flex; flex-direction: column; gap: 6px; padding-bottom: 8px; }
 
-    /* 大盘指数面板 */
+    /* 指数面板 */
     .index-panel {
       margin-bottom: 12px;
       border-radius: var(--card-radius-sm);
@@ -154,8 +149,7 @@
     }
     .index-toggle {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 14px;
-      cursor: pointer; user-select: none;
+      padding: 10px 14px; cursor: pointer; user-select: none;
       background: transparent;
     }
     .index-toggle .index-toggle-text { font-weight: 600; font-size: 0.8rem; }
@@ -188,7 +182,7 @@
     .index-metric-price { font-size: 0.68rem; font-weight: 700; }
     .index-metric-change { font-size: 0.62rem; font-weight: 700; }
 
-    /* 全局涨跌颜色 */
+    /* 涨跌颜色及微光 */
     .profit-positive {
       color: var(--up-color) !important;
       text-shadow: 0 6px 16px rgba(242,99,99,0.25), 0 14px 32px rgba(242,99,99,0.12);
@@ -202,7 +196,7 @@
       text-shadow: 0 6px 16px rgba(255,255,255,0.08), 0 14px 32px rgba(255,255,255,0.04);
     }
 
-    /* 自选基金卡片 */
+    /* 自选卡片 */
     .swipe-wrapper {
       position: relative; overflow: hidden;
       border-radius: var(--card-radius-sm);
@@ -236,11 +230,7 @@
       font-size: 0.55rem; padding: 2px 6px; border-radius: 10px;
       white-space: nowrap; flex-shrink: 0; border: 1px solid; font-weight: 600;
     }
-    .fund-name {
-      font-size: 0.78rem; font-weight: 600;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      max-width: 140px; /* 保持CSS截断，但不硬编码字符数 */
-    }
+    .fund-name { font-size: 0.78rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
     .fund-code { font-size: 0.6rem; color: var(--text-tertiary); white-space: nowrap; flex-shrink: 0; margin-left: 2px; }
     .change-percent {
       font-size: 0.8rem; font-weight: 700; padding: 2px 6px; border-radius: 6px;
@@ -309,6 +299,7 @@
 
     .holding-header { display: flex; align-items: center; justify-content: space-between; }
     .holding-header-left { display: flex; align-items: center; gap: 8px; }
+    /* 圆点：默认灰色(估值)，更新后青色 */
     .update-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-tertiary); flex-shrink: 0; transition: background 0.3s; }
     .update-dot.updated { background: var(--accent); }
 
@@ -356,6 +347,7 @@
 </head>
 <body>
 <div class="app-container">
+  <!-- 底部导航 -->
   <nav class="bottom-nav">
     <div class="nav-item active" data-page="watchlist">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -372,6 +364,7 @@
     </div>
   </nav>
 
+  <!-- ========== 自选页 ========== -->
   <div id="watchlistPage" class="page active">
     <header class="header" id="watchlistHeader">
       <div class="header-title-group">
@@ -416,7 +409,7 @@
     </header>
     <div class="divider"></div>
 
-    <!-- 大盘指数面板 -->
+    <!-- 大盘指数面板（顶部，默认收起） -->
     <div class="index-panel" id="indexPanel">
       <div class="index-toggle" id="indexToggle">
         <span class="index-toggle-text">大盘指数</span>
@@ -434,6 +427,7 @@
     </div>
   </div>
 
+  <!-- ========== 持仓页 ========== -->
   <div id="holdingsPage" class="page">
     <header class="header" id="holdingsHeader">
       <div class="header-title-group">
@@ -465,6 +459,7 @@
     <div id="holdingsList"></div>
   </div>
 
+  <!-- 弹窗等结构保持一致 -->
   <div class="overlay" id="overlay"></div>
   <div class="bottom-sheet" id="bottomSheet">
     <div class="sheet-handle"></div>
@@ -508,7 +503,7 @@
 
 <script>
 (() => {
-  // ========== 常量 & 存储键 ==========
+  // ========== 存储键 ==========
   const STORAGE_WATCHLIST = 'fund_watchlist_v2';
   const STORAGE_HOLDINGS  = 'fund_holdings';
   const CACHE_KEY         = 'fund_data_cache';
@@ -519,6 +514,7 @@
   const FUND_API          = 'https://fundgz.1234567.com.cn/js/';
   const MAX_CON           = 3;
 
+  // ========== DOM元素引用 ==========
   const $ = (id) => document.getElementById(id);
   const watchlistPage     = $('watchlistPage');
   const holdingsPage      = $('holdingsPage');
@@ -551,18 +547,18 @@
   const btnCopyConfig     = $('btnCopyConfig');
   const btnImportSheet    = $('btnImportSheet');
   const importFile        = $('importFile');
-  const watchlistHeaderIcon = $('watchlistHeaderIcon');
-  const holdingsHeaderIcon  = $('holdingsHeaderIcon');
   const indexToggle       = $('indexToggle');
   const indexGridContainer = $('indexGridContainer');
   const indexGrid         = $('indexGrid');
 
+  // ========== 全局状态 ==========
   let watchlist = [], holdings = {}, fundDataCache = {}, officialDataCache = {};
   let refreshTimer = null, toastTimer = null;
   let sortMode = 'manual', isBulkEditing = false, indexExpanded = false, isEditMode = false;
   let manualOrder = [];
   let openedSwipe = null, swipeStartX = 0, swipeStartY = 0, swipeCurrentX = 0, isSwiping = false;
 
+  // ========== 工具函数 ==========
   const escapeHTML = (str) => { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; };
   function showToast(msg, type = '') {
     clearTimeout(toastTimer);
@@ -582,6 +578,7 @@
     return now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
   }
 
+  // ========== 持久化存储 ==========
   function loadOfficialCache() {
     try {
       const stored = localStorage.getItem(OFFICIAL_CACHE_KEY);
@@ -602,6 +599,7 @@
   function loadCache() { try { const c = JSON.parse(localStorage.getItem(CACHE_KEY)); if (c) fundDataCache = c; } catch {} }
   function saveCache() { localStorage.setItem(CACHE_KEY, JSON.stringify(fundDataCache)); }
 
+  // ========== 行业标签 ==========
   const INDUSTRY_COLORS = {
     '白酒': { bg: 'rgba(255,180,100,0.2)', color: '#ffb464', border: 'rgba(255,180,100,0.4)' },
     '医药': { bg: 'rgba(100,200,255,0.2)', color: '#64c8ff', border: 'rgba(100,200,255,0.4)' },
@@ -644,6 +642,7 @@
     return '';
   }
 
+  // ========== 网络请求 ==========
   function fetchSingle(code) {
     return new Promise((resolve, reject) => {
       const sid = 'jsonp-' + code;
@@ -698,20 +697,12 @@
       INDEX_CODES.forEach(item => {
         const d = map[item.code];
         if (!d || isNaN(d.price)) {
-          html += `<div class="index-metric-card">
-            <div class="index-metric-name">${item.name}</div>
-            <div class="index-metric-price neutral">--</div>
-            <div class="index-metric-change neutral">--</div>
-          </div>`;
+          html += `<div class="index-metric-card"><div class="index-metric-name">${item.name}</div><div class="index-metric-price neutral">--</div><div class="index-metric-change neutral">--</div></div>`;
           return;
         }
         const arrow = d.change > 0 ? '▲' : d.change < 0 ? '▼' : '';
         const changeClass = d.change > 0 ? 'profit-positive' : d.change < 0 ? 'profit-negative' : 'neutral';
-        html += `<div class="index-metric-card">
-          <div class="index-metric-name">${item.name}</div>
-          <div class="index-metric-price ${changeClass}">${d.price.toFixed(2)}</div>
-          <div class="index-metric-change ${changeClass}">${arrow} ${Math.abs(d.changePercent).toFixed(2)}%</div>
-        </div>`;
+        html += `<div class="index-metric-card"><div class="index-metric-name">${item.name}</div><div class="index-metric-price ${changeClass}">${d.price.toFixed(2)}</div><div class="index-metric-change ${changeClass}">${arrow} ${Math.abs(d.changePercent).toFixed(2)}%</div></div>`;
       });
       indexGrid.innerHTML = html;
     } catch (e) {
@@ -719,17 +710,26 @@
     }
   }
 
-  function triggerIconGlow(iconElement) {
-    if (!iconElement) return;
-    iconElement.classList.add('glow');
-    iconElement.addEventListener('animationend', () => iconElement.classList.remove('glow'), { once: true });
-  }
-
+  // ========== 手动排序 ==========
   function getManualOrderArray() {
     if (manualOrder.length === watchlist.length && manualOrder.every(c => watchlist.includes(c))) return [...manualOrder];
     return [...watchlist];
   }
 
+  function moveItemUp(code) {
+    const arr = getManualOrderArray(); const idx = arr.indexOf(code);
+    if (idx <= 0) return;
+    [arr[idx-1], arr[idx]] = [arr[idx], arr[idx-1]];
+    manualOrder = arr; saveManualOrder(); renderWatchlist();
+  }
+  function moveItemDown(code) {
+    const arr = getManualOrderArray(); const idx = arr.indexOf(code);
+    if (idx < 0 || idx >= arr.length-1) return;
+    [arr[idx], arr[idx+1]] = [arr[idx+1], arr[idx]];
+    manualOrder = arr; saveManualOrder(); renderWatchlist();
+  }
+
+  // ========== 自选渲染 ==========
   function renderWatchlist() {
     if (!watchlist.length) { fundList.innerHTML = ''; emptyState.style.display = 'block'; return; }
     emptyState.style.display = 'none';
@@ -748,7 +748,6 @@
 
     fundList.innerHTML = displayOrder.map((code) => {
       const d = fundDataCache[code];
-      // 恢复完整基金名称，不再截断
       const name = d?.name || '加载中...';
       const gszzl = d?.gszzl != null ? parseFloat(d.gszzl) : null;
       const cls = gszzl === null ? 'zero' : (gszzl > 0 ? 'up' : 'down');
@@ -779,19 +778,7 @@
     }
   }
 
-  function moveItemUp(code) {
-    const arr = getManualOrderArray(); const idx = arr.indexOf(code);
-    if (idx <= 0) return;
-    [arr[idx-1], arr[idx]] = [arr[idx], arr[idx-1]];
-    manualOrder = arr; saveManualOrder(); renderWatchlist();
-  }
-  function moveItemDown(code) {
-    const arr = getManualOrderArray(); const idx = arr.indexOf(code);
-    if (idx < 0 || idx >= arr.length-1) return;
-    [arr[idx], arr[idx+1]] = [arr[idx+1], arr[idx]];
-    manualOrder = arr; saveManualOrder(); renderWatchlist();
-  }
-
+  // ========== 左滑删除 ==========
   function closeSwipe(wrapper) {
     if (!wrapper) return;
     const content = wrapper.querySelector('.swipe-content');
@@ -855,12 +842,7 @@
     if (openedSwipe && !e.target.closest('.swipe-wrapper')) { closeSwipe(openedSwipe); openedSwipe = null; }
   }, { passive: true });
 
-  function updateTimeDisplay() {
-    const now = new Date();
-    const timeStr = now.toLocaleString('zh-CN', { hour12: false, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
-    headerTime.textContent = timeStr; holdingsUpdateTime.textContent = timeStr;
-  }
-
+  // ========== 自选增删 ==========
   function addWatchlist(code) {
     code = String(code).trim();
     if (!/^\d{6}$/.test(code)) return showToast('请输入6位数字代码','error'), false;
@@ -902,8 +884,6 @@
     const queue = [...allCodes]; const tasks = [];
     while (queue.length) { const batch = queue.splice(0, MAX_CON); tasks.push(...batch.map(fetchAndUpdate)); await Promise.allSettled(tasks); tasks.length = 0; }
     renderWatchlist(); renderHoldings(); saveCache(); updateTimeDisplay();
-    const currentPage = watchlistPage.classList.contains('active') ? 'watchlist' : 'holdings';
-    triggerIconGlow(currentPage === 'watchlist' ? watchlistHeaderIcon : holdingsHeaderIcon);
   }
 
   function scheduleRefresh() {
@@ -913,7 +893,8 @@
   }
   function refreshAllData() { return fetchAllFunds().then(scheduleRefresh); }
 
-  async function renderHoldings() {
+  // ========== 持仓渲染（秒开优化 + 圆点状态） ==========
+  function renderHoldings() {
     const codes = Object.keys(holdings);
     if (codes.length === 0) {
       holdingsList.innerHTML = '<div class="empty-state">暂无持仓，点击 + 添加</div>';
@@ -921,41 +902,155 @@
       return;
     }
 
-    Promise.allSettled(codes.map(code => fetchSingle(code).then(d => {
-      fundDataCache[code] = { fundcode: code, name: d.name, gsz: d.gsz, gszzl: d.gszzl, dwjz: d.dwjz, gztime: d.gztime };
-    }).catch(() => {}))).then(async () => {
-      const officialResults = await Promise.all(codes.map(fetchOfficialData));
-      let html = '', totalAsset = 0, todayProfitSum = 0, totalProfitSum = 0;
-      for (let i = 0; i < codes.length; i++) {
-        const code = codes[i]; const h = holdings[code]; const d = fundDataCache[code] || {}; const od = officialResults[i];
-        let gsz, dwjz, gszzl;
-        if (od && od.updated && !isNaN(od.officialNetValue)) {
-          gsz = od.officialNetValue; dwjz = parseFloat(d.dwjz) || 0;
-          gszzl = (typeof od.officialChange === 'number' && !isNaN(od.officialChange)) ? od.officialChange : (parseFloat(d.gszzl) || 0);
-        } else {
-          gsz = parseFloat(d.gsz) || 0; dwjz = parseFloat(d.dwjz) || 0; gszzl = parseFloat(d.gszzl) || 0;
-        }
-        const cost = parseFloat(h.cost) || 0; const shares = parseFloat(h.shares) || 0;
-        const currentVal = gsz * shares; const dayProfit = shares * dwjz * (gszzl / 100); const totalP = (gsz - cost) * shares;
-        totalAsset += currentVal; todayProfitSum += dayProfit; totalProfitSum += totalP;
-        const dayYieldRate = gszzl; const totalYieldRate = cost ? ((gsz - cost) / cost * 100) : 0;
-        const cls = gszzl > 0 ? 'up' : gszzl < 0 ? 'down' : 'zero';
-        const profitClass = (v) => v >= 0 ? 'profit-positive' : 'profit-negative';
-        const updated = (od && od.updated) || false;
-        html += `<div class="holding-card ${cls}" data-code="${code}">
-          <div class="holding-header"><div class="holding-header-left"><span class="update-dot ${updated ? 'updated' : ''}"></span><span class="holding-name">${escapeHTML(h.name || d.name || code)}</span><span class="holding-code">${code}</span></div><span class="holding-amount">${currentVal.toFixed(2)}</span></div>
-          <div class="metrics-row">
-            <div class="metric-card"><span class="metric-label">今日涨幅</span><span class="metric-value ${profitClass(gszzl)}">${gszzl>=0?'+':''}${gszzl.toFixed(2)}%</span></div>
-            <div class="metric-card"><span class="metric-label">日收益</span><span class="metric-value ${profitClass(dayProfit)}">${formatMoney(dayProfit)}</span></div>
-            <div class="metric-card"><span class="metric-label">持有收益</span><span class="metric-value ${profitClass(totalP)}">${formatMoney(totalP)}</span></div>
-            <div class="metric-card"><span class="metric-label">持有收益率</span><span class="metric-value ${profitClass(totalYieldRate)}">${totalYieldRate>=0?'+':''}${totalYieldRate.toFixed(2)}%</span></div>
+    // 1. 立即用缓存渲染
+    const initialHtml = buildHoldingsHtml(codes);
+    holdingsList.innerHTML = initialHtml;
+    updateSummaryFromHtml();
+
+    // 2. 后台更新数据并逐卡刷新
+    refreshHoldingsInBackground(codes);
+  }
+
+  /** 根据给定代码生成持仓 HTML，并返回每个代码对应的数据（用于后续更新） */
+  function buildHoldingsHtml(codes) {
+    let totalAsset = 0, todayProfitSum = 0, totalProfitSum = 0;
+    let cardsData = [];
+
+    const htmlParts = codes.map(code => {
+      const h = holdings[code];
+      const d = fundDataCache[code] || {};
+      const co = officialDataCache[code] || {};
+
+      const gsz = co.updated ? co.officialNetValue : (parseFloat(d.gsz) || 0);
+      const dwjz = parseFloat(d.dwjz) || 0;
+      const gszzl = co.updated ? co.officialChange : (parseFloat(d.gszzl) || 0);
+      const cost = parseFloat(h.cost) || 0;
+      const shares = parseFloat(h.shares) || 0;
+
+      const currentVal = gsz * shares;
+      const dayProfit = shares * dwjz * (gszzl / 100);
+      const totalP = (gsz - cost) * shares;
+      const dayYieldRate = gszzl;
+      const totalYieldRate = cost ? ((gsz - cost) / cost * 100) : 0;
+
+      totalAsset += currentVal;
+      todayProfitSum += dayProfit;
+      totalProfitSum += totalP;
+
+      const cls = gszzl > 0 ? 'up' : gszzl < 0 ? 'down' : 'zero';
+      const profitClass = (v) => v >= 0 ? 'profit-positive' : 'profit-negative';
+      const updated = co.updated || false; // 圆点：青色仅当已更新净值
+
+      cardsData.push({ code, gsz, dwjz, gszzl, cost, shares, currentVal, dayProfit, totalP, dayYieldRate, totalYieldRate, updated });
+
+      return `<div class="holding-card ${cls}" data-code="${code}">
+        <div class="holding-header">
+          <div class="holding-header-left">
+            <span class="update-dot${updated ? ' updated' : ''}"></span>
+            <span class="holding-name">${escapeHTML(h.name || d.name || code)}</span>
+            <span class="holding-code">${code}</span>
           </div>
-        </div>`;
-      }
-      holdingsList.innerHTML = html;
-      updateSummary({ totalAsset, todayProfit: todayProfitSum, totalProfit: totalProfitSum });
-      if (isBulkEditing) enterBulkEditMode();
+          <span class="holding-amount">${currentVal.toFixed(2)}</span>
+        </div>
+        <div class="metrics-row">
+          <div class="metric-card"><span class="metric-label">今日涨幅</span><span class="metric-value ${profitClass(dayYieldRate)}">${dayYieldRate>=0?'+':''}${dayYieldRate.toFixed(2)}%</span></div>
+          <div class="metric-card"><span class="metric-label">日收益</span><span class="metric-value ${profitClass(dayProfit)}">${formatMoney(dayProfit)}</span></div>
+          <div class="metric-card"><span class="metric-label">持有收益</span><span class="metric-value ${profitClass(totalP)}">${formatMoney(totalP)}</span></div>
+          <div class="metric-card"><span class="metric-label">持有收益率</span><span class="metric-value ${profitClass(totalYieldRate)}">${totalYieldRate>=0?'+':''}${totalYieldRate.toFixed(2)}%</span></div>
+        </div>
+      </div>`;
     });
+
+    window.__holdingsCache = { totalAsset, todayProfitSum, totalProfitSum, cardsData };
+    return htmlParts.join('');
+  }
+
+  function updateSummaryFromHtml() {
+    const cache = window.__holdingsCache;
+    if (!cache) return;
+    updateSummary({ totalAsset: cache.totalAsset, todayProfit: cache.todayProfitSum, totalProfit: cache.totalProfitSum });
+  }
+
+  /** 后台更新：逐只基金请求估值+净值，并更新对应卡片 */
+  async function refreshHoldingsInBackground(codes) {
+    for (const code of codes) {
+      try {
+        const d = await fetchSingle(code);
+        fundDataCache[code] = { ...fundDataCache[code], fundcode: code, name: d.name, gsz: d.gsz, gszzl: d.gszzl, dwjz: d.dwjz, gztime: d.gztime };
+      } catch (e) {}
+      try {
+        const od = await fetchOfficialData(code);
+        if (od) {
+          officialDataCache[code] = od;
+          saveOfficialCache();
+        }
+      } catch (e) {}
+      // 更新单卡DOM
+      updateHoldingCard(code);
+      // 更新汇总数据
+      updateSummaryFromCurrentCards();
+    }
+  }
+
+  /** 更新单张持仓卡片（保留批量编辑状态下不刷新DOM） */
+  function updateHoldingCard(code) {
+    if (isBulkEditing) return; // 批量编辑时不覆盖输入框
+    const card = document.querySelector(`#holdingsList .holding-card[data-code="${code}"]`);
+    if (!card) return;
+    const h = holdings[code];
+    const d = fundDataCache[code] || {};
+    const co = officialDataCache[code] || {};
+
+    const gsz = co.updated ? co.officialNetValue : (parseFloat(d.gsz) || 0);
+    const dwjz = parseFloat(d.dwjz) || 0;
+    const gszzl = co.updated ? co.officialChange : (parseFloat(d.gszzl) || 0);
+    const cost = parseFloat(h.cost) || 0;
+    const shares = parseFloat(h.shares) || 0;
+
+    const currentVal = gsz * shares;
+    const dayProfit = shares * dwjz * (gszzl / 100);
+    const totalP = (gsz - cost) * shares;
+    const dayYieldRate = gszzl;
+    const totalYieldRate = cost ? ((gsz - cost) / cost * 100) : 0;
+    const cls = gszzl > 0 ? 'up' : gszzl < 0 ? 'down' : 'zero';
+    const profitClass = (v) => v >= 0 ? 'profit-positive' : 'profit-negative';
+    const updated = co.updated || false;
+
+    // 更新卡片类别（边框颜色）
+    card.className = 'holding-card ' + cls;
+    // 更新圆点
+    const dot = card.querySelector('.update-dot');
+    if (dot) { dot.className = 'update-dot' + (updated ? ' updated' : ''); }
+    // 更新金额
+    const amountEl = card.querySelector('.holding-amount');
+    if (amountEl) amountEl.textContent = currentVal.toFixed(2);
+    // 更新四个指标
+    const metrics = card.querySelectorAll('.metric-value');
+    if (metrics.length >= 4) {
+      metrics[0].textContent = (dayYieldRate>=0?'+':'') + dayYieldRate.toFixed(2) + '%';
+      metrics[0].className = 'metric-value ' + profitClass(dayYieldRate);
+      metrics[1].textContent = formatMoney(dayProfit);
+      metrics[1].className = 'metric-value ' + profitClass(dayProfit);
+      metrics[2].textContent = formatMoney(totalP);
+      metrics[2].className = 'metric-value ' + profitClass(totalP);
+      metrics[3].textContent = (totalYieldRate>=0?'+':'') + totalYieldRate.toFixed(2) + '%';
+      metrics[3].className = 'metric-value ' + profitClass(totalYieldRate);
+    }
+  }
+
+  /** 重新计算汇总数据（基于当前DOM或缓存） */
+  function updateSummaryFromCurrentCards() {
+    const cards = document.querySelectorAll('#holdingsList .holding-card');
+    let totalAsset = 0, todayProfitSum = 0, totalProfitSum = 0;
+    cards.forEach(card => {
+      const amount = parseFloat(card.querySelector('.holding-amount')?.textContent) || 0;
+      totalAsset += amount;
+      const dayProfitText = card.querySelectorAll('.metric-value')[1]?.textContent || '0';
+      todayProfitSum += parseFloat(dayProfitText.replace(/[^0-9.-]/g, '')) || 0;
+      const totalProfitText = card.querySelectorAll('.metric-value')[2]?.textContent || '0';
+      totalProfitSum += parseFloat(totalProfitText.replace(/[^0-9.-]/g, '')) || 0;
+    });
+    updateSummary({ totalAsset, todayProfit: todayProfitSum, totalProfit: totalProfitSum });
   }
 
   function updateSummary({ totalAsset = 0, todayProfit = 0, totalProfit = 0 }) {
@@ -969,6 +1064,7 @@
     document.getElementById('totalProfit').className = 'summary-value ' + totalCls;
   }
 
+  // ========== 批量编辑 ==========
   function enterBulkEditMode() {
     document.querySelectorAll('#holdingsList .holding-card').forEach(card => {
       const code = card.dataset.code;
@@ -977,8 +1073,22 @@
       if (metrics) metrics.style.display = 'none';
       let editDiv = card.querySelector('.edit-controls');
       if (!editDiv) { editDiv = document.createElement('div'); editDiv.className = 'edit-controls'; card.appendChild(editDiv); }
-      editDiv.innerHTML = `<input type="number" class="edit-cost" value="${h.cost}" step="any" inputmode="decimal" placeholder="成本"><input type="number" class="edit-shares" value="${h.shares}" step="any" inputmode="decimal" placeholder="份额"><button class="btn danger edit-delete-btn">删除</button>`;
-      editDiv.querySelector('.edit-delete-btn').onclick = (e) => { e.stopPropagation(); if (confirm('确认删除该持仓？')) { delete holdings[code]; saveHoldings(); isBulkEditing = false; btnBulkEdit.classList.remove('edit-active'); renderHoldings(); showToast('已删除'); } };
+      editDiv.innerHTML = `
+        <input type="number" class="edit-cost" value="${h.cost}" step="any" inputmode="decimal" placeholder="成本">
+        <input type="number" class="edit-shares" value="${h.shares}" step="any" inputmode="decimal" placeholder="份额">
+        <button class="btn danger edit-delete-btn">删除</button>
+      `;
+      editDiv.querySelector('.edit-delete-btn').onclick = (e) => {
+        e.stopPropagation();
+        if (confirm('确认删除该持仓？')) {
+          delete holdings[code];
+          saveHoldings();
+          isBulkEditing = false;
+          btnBulkEdit.classList.remove('edit-active');
+          renderHoldings();
+          showToast('已删除');
+        }
+      };
     });
   }
 
@@ -989,16 +1099,22 @@
         const costInput = card.querySelector('.edit-cost'), shareInput = card.querySelector('.edit-shares');
         if (costInput && shareInput) {
           const cost = parseFloat(costInput.value), shares = parseFloat(shareInput.value);
-          if (!isNaN(cost) && cost > 0 && !isNaN(shares) && shares > 0) holdings[code] = { cost, shares, name: holdings[code]?.name || '' };
+          if (!isNaN(cost) && cost > 0 && !isNaN(shares) && shares > 0) {
+            holdings[code] = { cost, shares, name: holdings[code]?.name || '' };
+          }
         }
         card.querySelector('.edit-controls')?.remove();
         const metrics = card.querySelector('.metrics-row'); if (metrics) metrics.style.display = '';
       });
       saveHoldings(); isBulkEditing = false; btnBulkEdit.classList.remove('edit-active');
       renderHoldings(); showToast('批量保存成功');
-    } else { isBulkEditing = true; btnBulkEdit.classList.add('edit-active'); enterBulkEditMode(); }
+    } else {
+      isBulkEditing = true; btnBulkEdit.classList.add('edit-active');
+      enterBulkEditMode();
+    }
   });
 
+  // ========== 弹窗控制 ==========
   function getConfigJSON() { return JSON.stringify({ watchlist, holdings, manualOrder }, null, 2); }
   btnBackup.addEventListener('click', () => { overlay.classList.add('active'); backupSheet.classList.add('active'); });
   function closeBackupSheet() { overlay.classList.remove('active'); backupSheet.classList.remove('active'); }
@@ -1047,7 +1163,6 @@
       const page = item.dataset.page;
       watchlistPage.classList.toggle('active', page === 'watchlist'); holdingsPage.classList.toggle('active', page === 'holdings');
       if (page === 'holdings') renderHoldings();
-      triggerIconGlow(page === 'watchlist' ? watchlistHeaderIcon : holdingsHeaderIcon);
     });
   });
 
@@ -1090,6 +1205,12 @@
       indexToggle.classList.remove('expanded');
     }
   });
+
+  function updateTimeDisplay() {
+    const now = new Date();
+    const timeStr = now.toLocaleString('zh-CN', { hour12: false, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+    headerTime.textContent = timeStr; holdingsUpdateTime.textContent = timeStr;
+  }
 
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refreshAllData(); });
 
