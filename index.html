@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Capsule · 基金跟踪</title>
+  <title>Capsule•基金跟踪</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="apple-touch-icon" href="icon-180.png">
@@ -182,7 +182,7 @@
       padding: 12px 8px;
       text-align: center;
       display: flex; flex-direction: column; gap: 4px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.13); /* 改为0.13 */
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.13);
     }
     .index-metric-name { font-size: 0.55rem; color: var(--text-tertiary); }
     .index-metric-price { font-size: 0.68rem; font-weight: 700; }
@@ -236,7 +236,11 @@
       font-size: 0.55rem; padding: 2px 6px; border-radius: 10px;
       white-space: nowrap; flex-shrink: 0; border: 1px solid; font-weight: 600;
     }
-    .fund-name { font-size: 0.78rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fund-name {
+      font-size: 0.78rem; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 140px; /* 保持CSS截断，但不硬编码字符数 */
+    }
     .fund-code { font-size: 0.6rem; color: var(--text-tertiary); white-space: nowrap; flex-shrink: 0; margin-left: 2px; }
     .change-percent {
       font-size: 0.8rem; font-weight: 700; padding: 2px 6px; border-radius: 6px;
@@ -285,7 +289,7 @@
     .summary-card {
       flex: 1; background: var(--bg-summary);
       border-radius: var(--card-radius-lg); padding: 18px 10px; text-align: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.13); /* 改为0.13 */
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.13);
     }
     .summary-label { font-size: 0.6rem; color: var(--text-tertiary); margin-bottom: 8px; }
     .summary-value { font-size: 1.1rem; font-weight: 700; }
@@ -744,11 +748,11 @@
 
     fundList.innerHTML = displayOrder.map((code) => {
       const d = fundDataCache[code];
-      const rawName = d?.name || '加载中...';
-      const displayName = rawName.length > 7 ? rawName.slice(0, 7) + '…' : rawName;
+      // 恢复完整基金名称，不再截断
+      const name = d?.name || '加载中...';
       const gszzl = d?.gszzl != null ? parseFloat(d.gszzl) : null;
       const cls = gszzl === null ? 'zero' : (gszzl > 0 ? 'up' : 'down');
-      const ind = getIndustry(rawName);
+      const ind = getIndustry(name);
       let tagHtml = '';
       if (ind && INDUSTRY_COLORS[ind]) {
         const c = INDUSTRY_COLORS[ind];
@@ -761,7 +765,7 @@
         </div>` : '';
       return `<div class="swipe-wrapper" data-code="${code}">
         <div class="swipe-content ${cls}">
-          <div class="fund-card-left">${tagHtml}<span class="fund-name">${escapeHTML(displayName)}</span><span class="fund-code">${code}</span></div>
+          <div class="fund-card-left">${tagHtml}<span class="fund-name">${escapeHTML(name)}</span><span class="fund-code">${code}</span></div>
           <span class="change-percent ${cls}">${gszzl !== null ? (gszzl>=0?'+':'')+gszzl.toFixed(2)+'%' : '--'}</span>
           ${editActionsHtml}
         </div>
