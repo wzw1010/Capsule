@@ -324,22 +324,21 @@
         .menu-item:active { background: rgba(255,255,255,0.06); }
         .menu-item svg { width: 20px; height: 20px; stroke: var(--text-secondary); }
         .menu-item span { font-size: 0.85rem; font-weight: 500; }
+
+        /* 调试点击提示 */
+        .debug-hint { font-size: 0.5rem; color: #555; margin-left: 6px; }
     </style>
 </head>
 <body>
 <div class="app-container">
     <nav class="bottom-nav">
         <div class="nav-item active" data-page="watchlist">
-            <!-- 自选图标（青色） -->
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g opacity="0.5">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 6C2.25 5.58579 2.58579 5.25 3 5.25H20C20.4142 5.25 20.75 5.58579 20.75 6C20.75 6.41421 20.4142 6.75 20 6.75H3C2.58579 6.75 2.25 6.41421 2.25 6ZM2.25 11C2.25 10.5858 2.58579 10.25 3 10.25H9C9.41421 10.25 9.75 10.5858 9.75 11C9.75 11.4142 9.41421 11.75 9 11.75H3C2.58579 11.75 2.25 11.4142 2.25 11ZM2.25 16C2.25 15.5858 2.58579 15.25 3 15.25H10C10.4142 15.25 10.75 15.5858 10.75 16C10.75 16.4142 10.4142 16.75 10 16.75H3C2.58579 16.75 2.25 16.4142 2.25 16Z" fill="currentColor"/>
-                </g>
+                <g opacity="0.5"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 6C2.25 5.58579 2.58579 5.25 3 5.25H20C20.4142 5.25 20.75 5.58579 20.75 6C20.75 6.41421 20.4142 6.75 20 6.75H3C2.58579 6.75 2.25 6.41421 2.25 6ZM2.25 11C2.25 10.5858 2.58579 10.25 3 10.25H9C9.41421 10.25 9.75 10.5858 9.75 11C9.75 11.4142 9.41421 11.75 9 11.75H3C2.58579 11.75 2.25 11.4142 2.25 11ZM2.25 16C2.25 15.5858 2.58579 15.25 3 15.25H10C10.4142 15.25 10.75 15.5858 10.75 16C10.75 16.4142 10.4142 16.75 10 16.75H3C2.58579 16.75 2.25 16.4142 2.25 16Z" fill="currentColor"/></g>
                 <path d="M13 11.7148C13 13.4674 15.1633 15.3304 16.4901 16.3082C16.9442 16.643 17.1713 16.8103 17.5 16.8103C17.8287 16.8103 18.0558 16.643 18.5099 16.3083C19.8367 15.3304 22 13.4674 22 11.7148C22 9.03759 19.5249 8.03807 17.5 10.1062C15.4751 8.03807 13 9.03759 13 11.7148Z" fill="currentColor"/>
             </svg>
         </div>
         <div class="nav-item" data-page="holdings">
-            <!-- 持仓图标（改为青色） -->
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M3.29289 9.29289C3 9.58579 3 10.0572 3 11V17C3 17.9428 3 18.4142 3.29289 18.7071C3.58579 19 4.05719 19 5 19C5.94281 19 6.41421 19 6.70711 18.7071C7 18.4142 7 17.9428 7 17V11C7 10.0572 7 9.58579 6.70711 9.29289C6.41421 9 5.94281 9 5 9C4.05719 9 3.58579 9 3.29289 9.29289Z" fill="currentColor"/>
                 <path opacity="0.4" d="M17.2929 2.29289C17 2.58579 17 3.05719 17 4V17C17 17.9428 17 18.4142 17.2929 18.7071C17.5858 19 18.0572 19 19 19C19.9428 19 20.4142 19 20.7071 18.7071C21 18.4142 21 17.9428 21 17V4C21 3.05719 21 2.58579 20.7071 2.29289C20.4142 2 19.9428 2 19 2C18.0572 2 17.5858 2 17.2929 2.29289Z" fill="currentColor"/>
@@ -349,15 +348,11 @@
         </div>
     </nav>
 
-    <!-- 自选页 -->
     <div id="watchlistPage" class="page active">
         <header class="header" id="watchlistHeader">
             <div class="header-title-group" style="color: #00CECA;">
-                <!-- 自选Header图标（青色，无容器） -->
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g opacity="0.5">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 6C2.25 5.58579 2.58579 5.25 3 5.25H20C20.4142 5.25 20.75 5.58579 20.75 6C20.75 6.41421 20.4142 6.75 20 6.75H3C2.58579 6.75 2.25 6.41421 2.25 6ZM2.25 11C2.25 10.5858 2.58579 10.25 3 10.25H9C9.41421 10.25 9.75 10.5858 9.75 11C9.75 11.4142 9.41421 11.75 9 11.75H3C2.58579 11.75 2.25 11.4142 2.25 11ZM2.25 16C2.25 15.5858 2.58579 15.25 3 15.25H10C10.4142 15.25 10.75 15.5858 10.75 16C10.75 16.4142 10.4142 16.75 10 16.75H3C2.58579 16.75 2.25 16.4142 2.25 16Z" fill="currentColor"/>
-                    </g>
+                    <g opacity="0.5"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 6C2.25 5.58579 2.58579 5.25 3 5.25H20C20.4142 5.25 20.75 5.58579 20.75 6C20.75 6.41421 20.4142 6.75 20 6.75H3C2.58579 6.75 2.25 6.41421 2.25 6ZM2.25 11C2.25 10.5858 2.58579 10.25 3 10.25H9C9.41421 10.25 9.75 10.5858 9.75 11C9.75 11.4142 9.41421 11.75 9 11.75H3C2.58579 11.75 2.25 11.4142 2.25 11ZM2.25 16C2.25 15.5858 2.58579 15.25 3 15.25H10C10.4142 15.25 10.75 15.5858 10.75 16C10.75 16.4142 10.4142 16.75 10 16.75H3C2.58579 16.75 2.25 16.4142 2.25 16Z" fill="currentColor"/></g>
                     <path d="M13 11.7148C13 13.4674 15.1633 15.3304 16.4901 16.3082C16.9442 16.643 17.1713 16.8103 17.5 16.8103C17.8287 16.8103 18.0558 16.643 18.5099 16.3083C19.8367 15.3304 22 13.4674 22 11.7148C22 9.03759 19.5249 8.03807 17.5 10.1062C15.4751 8.03807 13 9.03759 13 11.7148Z" fill="currentColor"/>
                 </svg>
                 <div>
@@ -366,57 +361,27 @@
                 </div>
             </div>
             <div class="header-actions">
-                <button class="btn-icon" id="btnSyncHoldings" title="同步持仓">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
-                </button>
-                <button class="btn-icon sort-btn manual" id="btnSort" title="排序">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path class="arrow-up" d="M3 9l4 -4l4 4m-4 -4v14" />
-                        <path class="arrow-down" d="M21 15l-4 4l-4 -4m4 4v-14" />
-                    </svg>
-                </button>
-                <button class="btn-icon" id="btnEditWatchlist" title="编辑自选">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                </button>
-                <button class="btn-icon" id="btnRefresh" title="刷新">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-                    </svg>
-                </button>
-                <button class="btn-icon" id="btnAddWatchlist" title="添加自选">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                </button>
+                <button class="btn-icon" id="btnSyncHoldings" title="同步持仓"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></button>
+                <button class="btn-icon sort-btn manual" id="btnSort" title="排序"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path class="arrow-up" d="M3 9l4 -4l4 4m-4 -4v14"/><path class="arrow-down" d="M21 15l-4 4l-4 -4m4 4v-14"/></svg></button>
+                <button class="btn-icon" id="btnEditWatchlist" title="编辑自选"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                <button class="btn-icon" id="btnRefresh" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+                <button class="btn-icon" id="btnAddWatchlist" title="添加自选"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
             </div>
         </header>
         <div class="divider"></div>
 
         <div class="index-panel" id="indexPanel">
-            <div class="index-toggle" id="indexToggle">
-                <span class="index-toggle-text">大盘指数</span>
-                <span class="index-toggle-arrow">▼</span>
-            </div>
-            <div class="index-grid-container" id="indexGridContainer">
-                <div class="index-grid" id="indexGrid"></div>
-            </div>
+            <div class="index-toggle" id="indexToggle"><span class="index-toggle-text">大盘指数</span><span class="index-toggle-arrow">▼</span></div>
+            <div class="index-grid-container" id="indexGridContainer"><div class="index-grid" id="indexGrid"></div></div>
         </div>
 
         <div class="fund-list" id="fundList"></div>
-        <div class="empty-state" id="emptyState" style="display:none;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            <div>暂无自选基金</div>
-        </div>
+        <div class="empty-state" id="emptyState" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><div>暂无自选基金</div></div>
     </div>
 
-    <!-- 持仓页 -->
     <div id="holdingsPage" class="page">
         <header class="header" id="holdingsHeader">
-            <div class="header-title-group" style="color: #00CECA;">
-                <!-- 持仓Header图标（青色，无容器） -->
+            <div class="header-title-group" id="holdingsTitleGroup" style="color: #00CECA;">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M3.29289 9.29289C3 9.58579 3 10.0572 3 11V17C3 17.9428 3 18.4142 3.29289 18.7071C3.58579 19 4.05719 19 5 19C5.94281 19 6.41421 19 6.70711 18.7071C7 18.4142 7 17.9428 7 17V11C7 10.0572 7 9.58579 6.70711 9.29289C6.41421 9 5.94281 9 5 9C4.05719 9 3.58579 9 3.29289 9.29289Z" fill="currentColor"/>
                     <path opacity="0.4" d="M17.2929 2.29289C17 2.58579 17 3.05719 17 4V17C17 17.9428 17 18.4142 17.2929 18.7071C17.5858 19 18.0572 19 19 19C19.9428 19 20.4142 19 20.7071 18.7071C21 18.4142 21 17.9428 21 17V4C21 3.05719 21 2.58579 20.7071 2.29289C20.4142 2 19.9428 2 19 2C18.0572 2 17.5858 2 17.2929 2.29289Z" fill="currentColor"/>
@@ -424,7 +389,7 @@
                     <path d="M3 21.25C2.58579 21.25 2.25 21.5858 2.25 22C2.25 22.4142 2.58579 22.75 3 22.75H21C21.4142 22.75 21.75 22.4142 21.75 22C21.75 21.5858 21.4142 21.25 21 21.25H3Z" fill="currentColor"/>
                 </svg>
                 <div>
-                    <div class="header-title">我的持仓</div>
+                    <div class="header-title" id="holdingsHeaderTitle">我的持仓 <span class="debug-hint">(快速点5下清缓存)</span></div>
                     <div class="header-subtitle"><span id="holdingsUpdateTime">加载中...</span></div>
                 </div>
             </div>
@@ -448,37 +413,20 @@
     <div class="bottom-sheet" id="bottomSheet">
         <div class="sheet-handle"></div>
         <div class="sheet-title">添加自选基金</div>
-        <div class="input-group">
-            <input type="text" class="input-code" id="inputCode" placeholder="输入6位基金代码" maxlength="6" inputmode="numeric">
-            <button class="btn-add-circle" id="btnConfirmAdd">+</button>
-        </div>
+        <div class="input-group"><input type="text" class="input-code" id="inputCode" placeholder="输入6位基金代码" maxlength="6" inputmode="numeric"><button class="btn-add-circle" id="btnConfirmAdd">+</button></div>
     </div>
     <div class="bottom-sheet" id="holdingSheet">
         <div class="sheet-handle"></div>
         <div class="sheet-title">添加持仓基金</div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-            <input type="text" class="input-code" id="holdingCode" placeholder="基金代码 (6位)" maxlength="6" inputmode="numeric">
-            <input type="number" class="input-code" id="holdingCost" placeholder="成本净值" step="any" inputmode="decimal">
-            <input type="number" class="input-code" id="holdingShares" placeholder="持有份额" step="any" inputmode="decimal">
-            <button class="btn btn-full" id="confirmAddHoldingSheet" style="background:var(--accent);color:#111;">添加</button>
-        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;"><input type="text" class="input-code" id="holdingCode" placeholder="基金代码 (6位)" maxlength="6" inputmode="numeric"><input type="number" class="input-code" id="holdingCost" placeholder="成本净值" step="any" inputmode="decimal"><input type="number" class="input-code" id="holdingShares" placeholder="持有份额" step="any" inputmode="decimal"><button class="btn btn-full" id="confirmAddHoldingSheet" style="background:var(--accent);color:#111;">添加</button></div>
     </div>
     <div class="bottom-sheet" id="backupSheet">
         <div class="sheet-handle"></div>
         <div class="sheet-title">配置备份</div>
         <div style="display:flex;flex-direction:column;gap:8px;">
-            <div class="menu-item" id="btnExportSheet">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                <span>导出配置</span>
-            </div>
-            <div class="menu-item" id="btnCopyConfig">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-                <span>复制配置</span>
-            </div>
-            <div class="menu-item" id="btnImportSheet">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <span>导入配置</span>
-            </div>
+            <div class="menu-item" id="btnExportSheet"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>导出配置</span></div>
+            <div class="menu-item" id="btnCopyConfig"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span>复制配置</span></div>
+            <div class="menu-item" id="btnImportSheet"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>导入配置</span></div>
             <input type="file" id="importFile" accept=".json" style="display:none;">
         </div>
     </div>
@@ -532,12 +480,30 @@
         const indexToggle       = $('indexToggle');
         const indexGridContainer = $('indexGridContainer');
         const indexGrid         = $('indexGrid');
+        const holdingsHeaderTitle = $('holdingsHeaderTitle');
 
         let watchlist = [], holdings = {}, fundDataCache = {}, officialDataCache = {};
         let refreshTimer = null, toastTimer = null;
         let sortMode = 'manual', isBulkEditing = false, indexExpanded = false, isEditMode = false;
         let manualOrder = [];
         let openedSwipe = null, swipeStartX = 0, swipeStartY = 0, swipeCurrentX = 0, isSwiping = false;
+
+        // 快速点击5次清除官方缓存 (手机调试专用)
+        let clickCount = 0, clickTimer = null;
+        holdingsHeaderTitle.addEventListener('click', () => {
+            clickCount++;
+            if (clickCount >= 5) {
+                clearTimeout(clickTimer);
+                clickCount = 0;
+                localStorage.removeItem(OFFICIAL_CACHE_KEY);
+                officialDataCache = {};
+                showToast('✅ 官方净值缓存已清除，刷新中...');
+                refreshAllData();
+            } else {
+                clearTimeout(clickTimer);
+                clickTimer = setTimeout(() => { clickCount = 0; }, 1500);
+            }
+        });
 
         const escapeHTML = (str) => { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; };
         function showToast(msg, type = '') {
@@ -559,7 +525,7 @@
         function isMarketClosed() {
             const now = new Date();
             const m = now.getHours() * 60 + now.getMinutes();
-            return m >= 900; // 15:00 后认为收盘
+            return m >= 900;
         }
         function formatMoney(val) { return (val >= 0 ? '+' : '') + val.toFixed(2); }
         function getTodayStr() {
@@ -573,7 +539,11 @@
                 if (stored) {
                     officialDataCache = JSON.parse(stored);
                     const today = getTodayStr();
-                    for (const code in officialDataCache) if (officialDataCache[code].date !== today) delete officialDataCache[code];
+                    for (const code in officialDataCache) {
+                        if (officialDataCache[code].date !== today || officialDataCache[code].officialNetValue == null) {
+                            delete officialDataCache[code];
+                        }
+                    }
                 }
             } catch (e) { officialDataCache = {}; }
         }
@@ -647,21 +617,31 @@
 
         async function fetchOfficialData(code) {
             const today = getTodayStr();
-            if (officialDataCache[code] && officialDataCache[code].date === today) return officialDataCache[code];
+            if (officialDataCache[code] && officialDataCache[code].date === today && officialDataCache[code].officialNetValue != null) {
+                return officialDataCache[code];
+            }
             try {
                 const targetUrl = `https://capsule-tau.vercel.app/api/netvalue?code=${code}`;
                 const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
                 const resp = await fetch(proxyUrl);
                 if (!resp.ok) return null;
                 const data = await resp.json();
-                if (data) { data.date = today; officialDataCache[code] = data; saveOfficialCache(); }
-                return data;
-            } catch (e) { return null; }
-        }
-
-        function shouldUseOfficialValue() {
-            // 如果今天不是交易日，或者已经收盘，则可以使用官方净值
-            return !isTradingDay() || isMarketClosed();
+                if (data) {
+                    if (data.officialNetValue == null || isNaN(data.officialNetValue)) {
+                        console.warn('官方净值数据无效', code, data);
+                        return null;
+                    }
+                    data.date = today;
+                    data.updated = true;
+                    officialDataCache[code] = data;
+                    saveOfficialCache();
+                    return data;
+                }
+                return null;
+            } catch (e) {
+                console.warn('获取官方净值失败', code, e);
+                return null;
+            }
         }
 
         async function fetchIndexData() {
@@ -751,6 +731,24 @@
             if (isEditMode) {
                 fundList.querySelectorAll('.move-up-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); moveItemUp(btn.dataset.code); }));
                 fundList.querySelectorAll('.move-down-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); moveItemDown(btn.dataset.code); }));
+            }
+        }
+
+        function updateWatchlistCard(code) {
+            const wrapper = document.querySelector(`.swipe-wrapper[data-code="${code}"]`);
+            if (!wrapper) return;
+            const d = fundDataCache[code];
+            if (!d) return;
+            const gszzl = d.gszzl != null ? parseFloat(d.gszzl) : null;
+            const cls = gszzl === null ? 'zero' : (gszzl > 0 ? 'up' : 'down');
+            const content = wrapper.querySelector('.swipe-content');
+            if (content) {
+                content.className = 'swipe-content ' + cls;
+                const chEl = content.querySelector('.change-percent');
+                if (chEl) {
+                    chEl.textContent = gszzl !== null ? (gszzl>=0?'+':'')+gszzl.toFixed(2)+'%' : '--';
+                    chEl.className = 'change-percent ' + cls;
+                }
             }
         }
 
@@ -879,6 +877,26 @@
             renderWatchlist(); renderHoldings(); saveCache(); updateTimeDisplay();
         }
 
+        async function backgroundRefresh() {
+            const allCodes = [...new Set([...watchlist, ...Object.keys(holdings)])];
+            if (!allCodes.length) return;
+            for (const code of allCodes) {
+                try {
+                    const d = await fetchSingle(code);
+                    fundDataCache[code] = { ...fundDataCache[code], fundcode: code, name: d.name, gsz: d.gsz, gszzl: d.gszzl, dwjz: d.dwjz, gztime: d.gztime };
+                } catch (e) {}
+                updateWatchlistCard(code);
+                try {
+                    const od = await fetchOfficialData(code);
+                    if (od) { officialDataCache[code] = od; saveOfficialCache(); }
+                } catch (e) {}
+                updateHoldingCard(code);
+                updateSummaryFromCurrentCards();
+            }
+            saveCache();
+            updateTimeDisplay();
+        }
+
         function scheduleRefresh() {
             clearTimeout(refreshTimer);
             const interval = isTradingTime() ? REFRESH_TRADING : REFRESH_IDLE;
@@ -886,7 +904,12 @@
         }
         function refreshAllData() { return fetchAllFunds().then(scheduleRefresh); }
 
-        // ========== 持仓渲染（修复净值日期判断） ==========
+        function shouldUseOfficialValue(co) {
+            if (!co || co.officialNetValue == null || isNaN(co.officialNetValue)) return false;
+            if (isTradingDay() && !isMarketClosed()) return false;
+            return true;
+        }
+
         function renderHoldings() {
             const codes = Object.keys(holdings);
             if (codes.length === 0) {
@@ -907,8 +930,7 @@
                 const d = fundDataCache[code] || {};
                 const co = officialDataCache[code] || {};
 
-                // 决定是否使用官方净值：收盘后且日期为今天，或者非交易日
-                const useOfficial = shouldUseOfficialValue() && co.updated && co.date === getTodayStr();
+                const useOfficial = shouldUseOfficialValue(co);
                 const gsz = useOfficial ? co.officialNetValue : (parseFloat(d.gsz) || 0);
                 const dwjz = parseFloat(d.dwjz) || 0;
                 const gszzl = useOfficial ? co.officialChange : (parseFloat(d.gszzl) || 0);
@@ -964,10 +986,7 @@
                 } catch (e) {}
                 try {
                     const od = await fetchOfficialData(code);
-                    if (od) {
-                        officialDataCache[code] = od;
-                        saveOfficialCache();
-                    }
+                    if (od) { officialDataCache[code] = od; saveOfficialCache(); }
                 } catch (e) {}
                 updateHoldingCard(code);
                 updateSummaryFromCurrentCards();
@@ -982,7 +1001,7 @@
             const d = fundDataCache[code] || {};
             const co = officialDataCache[code] || {};
 
-            const useOfficial = shouldUseOfficialValue() && co.updated && co.date === getTodayStr();
+            const useOfficial = shouldUseOfficialValue(co);
             const gsz = useOfficial ? co.officialNetValue : (parseFloat(d.gsz) || 0);
             const dwjz = parseFloat(d.dwjz) || 0;
             const gszzl = useOfficial ? co.officialChange : (parseFloat(d.gszzl) || 0);
@@ -1049,22 +1068,8 @@
                 if (metrics) metrics.style.display = 'none';
                 let editDiv = card.querySelector('.edit-controls');
                 if (!editDiv) { editDiv = document.createElement('div'); editDiv.className = 'edit-controls'; card.appendChild(editDiv); }
-                editDiv.innerHTML = `
-                    <input type="number" class="edit-cost" value="${h.cost}" step="any" inputmode="decimal" placeholder="成本">
-                    <input type="number" class="edit-shares" value="${h.shares}" step="any" inputmode="decimal" placeholder="份额">
-                    <button class="btn danger edit-delete-btn">删除</button>
-                `;
-                editDiv.querySelector('.edit-delete-btn').onclick = (e) => {
-                    e.stopPropagation();
-                    if (confirm('确认删除该持仓？')) {
-                        delete holdings[code];
-                        saveHoldings();
-                        isBulkEditing = false;
-                        btnBulkEdit.classList.remove('edit-active');
-                        renderHoldings();
-                        showToast('已删除');
-                    }
-                };
+                editDiv.innerHTML = `<input type="number" class="edit-cost" value="${h.cost}" step="any" inputmode="decimal" placeholder="成本"><input type="number" class="edit-shares" value="${h.shares}" step="any" inputmode="decimal" placeholder="份额"><button class="btn danger edit-delete-btn">删除</button>`;
+                editDiv.querySelector('.edit-delete-btn').onclick = (e) => { e.stopPropagation(); if (confirm('确认删除该持仓？')) { delete holdings[code]; saveHoldings(); isBulkEditing = false; btnBulkEdit.classList.remove('edit-active'); renderHoldings(); showToast('已删除'); } };
             });
         }
 
@@ -1075,19 +1080,14 @@
                     const costInput = card.querySelector('.edit-cost'), shareInput = card.querySelector('.edit-shares');
                     if (costInput && shareInput) {
                         const cost = parseFloat(costInput.value), shares = parseFloat(shareInput.value);
-                        if (!isNaN(cost) && cost > 0 && !isNaN(shares) && shares > 0) {
-                            holdings[code] = { cost, shares, name: holdings[code]?.name || '' };
-                        }
+                        if (!isNaN(cost) && cost > 0 && !isNaN(shares) && shares > 0) holdings[code] = { cost, shares, name: holdings[code]?.name || '' };
                     }
                     card.querySelector('.edit-controls')?.remove();
                     const metrics = card.querySelector('.metrics-row'); if (metrics) metrics.style.display = '';
                 });
                 saveHoldings(); isBulkEditing = false; btnBulkEdit.classList.remove('edit-active');
                 renderHoldings(); showToast('批量保存成功');
-            } else {
-                isBulkEditing = true; btnBulkEdit.classList.add('edit-active');
-                enterBulkEditMode();
-            }
+            } else { isBulkEditing = true; btnBulkEdit.classList.add('edit-active'); enterBulkEditMode(); }
         });
 
         function getConfigJSON() { return JSON.stringify({ watchlist, holdings, manualOrder }, null, 2); }
@@ -1181,7 +1181,9 @@
             }
         });
 
-        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refreshAllData(); });
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') backgroundRefresh();
+        });
 
         loadWatchlist(); loadHoldings(); loadCache(); loadOfficialCache(); loadManualOrder();
         renderWatchlist();
