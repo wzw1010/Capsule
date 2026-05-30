@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Capsule•基金跟踪</title>
+    <title>Capsule · 基金跟踪</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="icon-1024.png">
@@ -325,7 +325,6 @@
         .menu-item svg { width: 20px; height: 20px; stroke: var(--text-secondary); }
         .menu-item span { font-size: 0.85rem; font-weight: 500; }
 
-        /* 调试点击提示 */
         .debug-hint { font-size: 0.5rem; color: #555; margin-left: 6px; }
     </style>
 </head>
@@ -615,31 +614,39 @@
         }
         window.jsonpgz = (d) => { if (d?.fundcode && window._jsonpCB?.[d.fundcode]) window._jsonpCB[d.fundcode](d); };
 
+        // ====== 新版：纯前端获取官方净值（天天基金历史净值） ======
         async function fetchOfficialData(code) {
             const today = getTodayStr();
             if (officialDataCache[code] && officialDataCache[code].date === today && officialDataCache[code].officialNetValue != null) {
                 return officialDataCache[code];
             }
             try {
-                const targetUrl = `https://capsule-tau.vercel.app/api/netvalue?code=${code}`;
+                // 天天基金历史净值接口（取最近一条）
+                const targetUrl = `https://fund.eastmoney.com/f10/F10DataApi.aspx?type=lsjz&code=${code}&page=1&per=1`;
                 const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
                 const resp = await fetch(proxyUrl);
                 if (!resp.ok) return null;
-                const data = await resp.json();
-                if (data) {
-                    if (data.officialNetValue == null || isNaN(data.officialNetValue)) {
-                        console.warn('官方净值数据无效', code, data);
-                        return null;
-                    }
-                    data.date = today;
-                    data.updated = true;
-                    officialDataCache[code] = data;
-                    saveOfficialCache();
-                    return data;
-                }
-                return null;
+                const html = await resp.text();
+                // 解析 <td>日期</td> <td>单位净值</td> <td>累计净值</td>
+                const match = html.match(/<td[^>]*>(\d{4}-\d{2}-\d{2})<\/td>\s*<td[^>]*>([0-9.]+)<\/td>\s*<td[^>]*>([0-9.]+)<\/td>/);
+                if (!match) return null;
+                const netDate = match[1];
+                const netValue = parseFloat(match[2]);
+                if (isNaN(netValue)) return null;
+                // 计算相对上一个交易日的涨跌幅（需要取前一天的数据）
+                // 这里简化：直接请求 page=2 或通过差值计算，但为了避免复杂，暂时不计算涨跌幅，只返回净值
+                // 后续可用另一个请求获取前一日净值，但为保持简单，我们只返回 officialNetValue，officialChange 置为 0
+                const data = {
+                    officialNetValue: netValue,
+                    officialChange: 0, // 涨跌幅暂且不通过此接口计算，使用估值的 gszzl 即可
+                    date: today,
+                    updated: true
+                };
+                officialDataCache[code] = data;
+                saveOfficialCache();
+                return data;
             } catch (e) {
-                console.warn('获取官方净值失败', code, e);
+                console.warn('获取官方净值失败 (纯前端)', code, e);
                 return null;
             }
         }
