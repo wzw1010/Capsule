@@ -487,7 +487,6 @@
         let manualOrder = [];
         let openedSwipe = null, swipeStartX = 0, swipeStartY = 0, swipeCurrentX = 0, isSwiping = false;
 
-        // 快速点击5次清除官方缓存 (手机调试专用)
         let clickCount = 0, clickTimer = null;
         holdingsHeaderTitle.addEventListener('click', () => {
             clickCount++;
@@ -614,31 +613,43 @@
         }
         window.jsonpgz = (d) => { if (d?.fundcode && window._jsonpCB?.[d.fundcode]) window._jsonpCB[d.fundcode](d); };
 
-        // ====== 新版：纯前端获取官方净值（天天基金历史净值） ======
+        // ====== 修复版：取最近两条记录，计算涨跌幅 ======
         async function fetchOfficialData(code) {
             const today = getTodayStr();
             if (officialDataCache[code] && officialDataCache[code].date === today && officialDataCache[code].officialNetValue != null) {
                 return officialDataCache[code];
             }
             try {
-                // 天天基金历史净值接口（取最近一条）
-                const targetUrl = `https://fund.eastmoney.com/f10/F10DataApi.aspx?type=lsjz&code=${code}&page=1&per=1`;
+                const targetUrl = `https://fund.eastmoney.com/f10/F10DataApi.aspx?type=lsjz&code=${code}&page=1&per=2`;
                 const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
                 const resp = await fetch(proxyUrl);
                 if (!resp.ok) return null;
                 const html = await resp.text();
-                // 解析 <td>日期</td> <td>单位净值</td> <td>累计净值</td>
-                const match = html.match(/<td[^>]*>(\d{4}-\d{2}-\d{2})<\/td>\s*<td[^>]*>([0-9.]+)<\/td>\s*<td[^>]*>([0-9.]+)<\/td>/);
-                if (!match) return null;
-                const netDate = match[1];
-                const netValue = parseFloat(match[2]);
-                if (isNaN(netValue)) return null;
-                // 计算相对上一个交易日的涨跌幅（需要取前一天的数据）
-                // 这里简化：直接请求 page=2 或通过差值计算，但为了避免复杂，暂时不计算涨跌幅，只返回净值
-                // 后续可用另一个请求获取前一日净值，但为保持简单，我们只返回 officialNetValue，officialChange 置为 0
+                const matches = html.matchAll(/<td[^>]*>(\d{4}-\d{2}-\d{2})<\/td>\s*<td[^>]*>([0-9.]+)<\/td>\s*<td[^>]*>([0-9.]+)<\/td>/g);
+                const records = [];
+                for (const m of matches) {
+                    records.push({ date: m[1], nav: parseFloat(m[2]) });
+                }
+                if (records.length < 2) {
+                    if (records.length === 1) {
+                        const data = {
+                            officialNetValue: records[0].nav,
+                            officialChange: null,
+                            date: today,
+                            updated: true
+                        };
+                        officialDataCache[code] = data;
+                        saveOfficialCache();
+                        return data;
+                    }
+                    return null;
+                }
+                const latest = records[0].nav;
+                const prev = records[1].nav;
+                const changePercent = prev > 0 ? ((latest - prev) / prev) * 100 : null;
                 const data = {
-                    officialNetValue: netValue,
-                    officialChange: 0, // 涨跌幅暂且不通过此接口计算，使用估值的 gszzl 即可
+                    officialNetValue: latest,
+                    officialChange: changePercent != null ? changePercent : 0,
                     date: today,
                     updated: true
                 };
@@ -646,7 +657,7 @@
                 saveOfficialCache();
                 return data;
             } catch (e) {
-                console.warn('获取官方净值失败 (纯前端)', code, e);
+                console.warn('获取官方净值失败', code, e);
                 return null;
             }
         }
