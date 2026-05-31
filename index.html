@@ -62,25 +62,17 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100dvh;
+            padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px);
             overflow-x: hidden;
             user-select: none; -webkit-user-select: none;
             -webkit-font-smoothing: antialiased;
             transition: background 0.3s, color 0.3s;
-            display: flex;
-            flex-direction: column;
         }
 
-        .app-container {
-            max-width: 520px;
-            margin: 0 auto;
-            padding: 0 14px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
+        .app-container { max-width: 520px; margin: 0 auto; padding: 0 14px; }
 
-        .page { display: none; flex: 1; flex-direction: column; }
-        .page.active { display: flex; }
+        .page { display: none; }
+        .page.active { display: block; }
 
         .bottom-nav {
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
@@ -129,9 +121,9 @@
         .sort-btn.asc .arrow-down { opacity: 0.3; }
         .sort-btn.manual .arrow-up, .sort-btn.manual .arrow-down { opacity: 1; }
 
-        .fund-list { flex: 1; display: flex; flex-direction: column; gap: 6px; padding-bottom: 8px; }
+        .fund-list { display: flex; flex-direction: column; gap: 6px; padding-bottom: 8px; }
 
-        .index-panel { margin-bottom: 12px; border-radius: var(--card-radius-sm); background: var(--bg-card); border: 1px solid var(--border-subtle); overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .index-panel { margin-top: 8px; margin-bottom: 12px; border-radius: var(--card-radius-sm); background: var(--bg-card); border: 1px solid var(--border-subtle); overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
         .index-toggle { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; cursor: pointer; user-select: none; background: transparent; }
         .index-toggle .index-toggle-text { font-weight: 600; font-size: 0.8rem; }
         .index-toggle-arrow { font-size: 0.7rem; color: var(--text-tertiary); transition: transform 0.3s ease; display: inline-block; }
