@@ -1,0 +1,15 @@
+{
+  "name": "Capsule•基金跟踪",
+  "short_name": "基金跟踪",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0d0d11",
+  "theme_color": "#FF9500",
+  "icons": [
+    {
+      "src": "icon-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ]
+}

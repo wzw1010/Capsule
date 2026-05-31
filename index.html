@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Capsule•基金跟踪</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#FF9500" id="themeColorMeta">
+    <link rel="apple-touch-icon" href="icon-1024.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-container">
+    <nav class="bottom-nav">
+        <div class="nav-item active" data-page="watchlist">
+            <svg viewBox="0 0 24 24" fill="none"><g opacity="0.5"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 6C2.25 5.58579 2.58579 5.25 3 5.25H20C20.4142 5.25 20.75 5.58579 20.75 6C20.75 6.41421 20.4142 6.75 20 6.75H3C2.58579 6.75 2.25 6.41421 2.25 6ZM2.25 11C2.25 10.5858 2.58579 10.25 3 10.25H9C9.41421 10.25 9.75 10.5858 9.75 11C9.75 11.4142 9.41421 11.75 9 11.75H3C2.58579 11.75 2.25 11.4142 2.25 11ZM2.25 16C2.25 15.5858 2.58579 15.25 3 15.25H10C10.4142 15.25 10.75 15.5858 10.75 16C10.75 16.4142 10.4142 16.75 10 16.75H3C2.58579 16.75 2.25 16.4142 2.25 16Z" fill="currentColor"/></g><path d="M13 11.7148C13 13.4674 15.1633 15.3304 16.4901 16.3082C16.9442 16.643 17.1713 16.8103 17.5 16.8103C17.8287 16.8103 18.0558 16.643 18.5099 16.3083C19.8367 15.3304 22 13.4674 22 11.7148C22 9.03759 19.5249 8.03807 17.5 10.1062C15.4751 8.03807 13 9.03759 13 11.7148Z" fill="currentColor"/></svg>
+        </div>
+        <div class="nav-item" data-page="holdings">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M3.29289 9.29289C3 9.58579 3 10.0572 3 11V17C3 17.9428 3 18.4142 3.29289 18.7071C3.58579 19 4.05719 19 5 19C5.94281 19 6.41421 19 6.70711 18.7071C7 18.4142 7 17.9428 7 17V11C7 10.0572 7 9.58579 6.70711 9.29289C6.41421 9 5.94281 9 5 9C4.05719 9 3.58579 9 3.29289 9.29289Z" fill="currentColor"/><path opacity="0.4" d="M17.2929 2.29289C17 2.58579 17 3.05719 17 4V17C17 17.9428 17 18.4142 17.2929 18.7071C17.5858 19 18.0572 19 19 19C19.9428 19 20.4142 19 20.7071 18.7071C21 18.4142 21 17.9428 21 17V4C21 3.05719 21 2.58579 20.7071 2.29289C20.4142 2 19.9428 2 19 2C18.0572 2 17.5858 2 17.2929 2.29289Z" fill="currentColor"/><path opacity="0.7" d="M10 7C10 6.05719 10 5.58579 10.2929 5.29289C10.5858 5 11.0572 5 12 5C12.9428 5 13.4142 5 13.7071 5.29289C14 5.58579 14 6.05719 14 7V17C14 17.9428 14 18.4142 13.7071 18.7071C13.4142 19 12.9428 19 12 19C11.0572 19 10.5858 19 10.2929 18.7071C10 18.4142 10 17.9428 10 17V7Z" fill="currentColor"/><path d="M3 21.25C2.58579 21.25 2.25 21.5858 2.25 22C2.25 22.4142 2.58579 22.75 3 22.75H21C21.4142 22.75 21.75 22.4142 21.75 22C21.75 21.5858 21.4142 21.25 21 21.25H3Z" fill="currentColor"/></svg>
+        </div>
+    </nav>
+
+    <div id="watchlistPage" class="page active">
+        <header class="header" id="watchlistHeader">
+            <div class="header-title-group" style="color: #00CECA;">
+                <svg viewBox="0 0 24 24" fill="none"><g opacity="0.5"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 6C2.25 5.58579 2.58579 5.25 3 5.25H20C20.4142 5.25 20.75 5.58579 20.75 6C20.75 6.41421 20.4142 6.75 20 6.75H3C2.58579 6.75 2.25 6.41421 2.25 6ZM2.25 11C2.25 10.5858 2.58579 10.25 3 10.25H9C9.41421 10.25 9.75 10.5858 9.75 11C9.75 11.4142 9.41421 11.75 9 11.75H3C2.58579 11.75 2.25 11.4142 2.25 11ZM2.25 16C2.25 15.5858 2.58579 15.25 3 15.25H10C10.4142 15.25 10.75 15.5858 10.75 16C10.75 16.4142 10.4142 16.75 10 16.75H3C2.58579 16.75 2.25 16.4142 2.25 16Z" fill="currentColor"/></g><path d="M13 11.7148C13 13.4674 15.1633 15.3304 16.4901 16.3082C16.9442 16.643 17.1713 16.8103 17.5 16.8103C17.8287 16.8103 18.0558 16.643 18.5099 16.3083C19.8367 15.3304 22 13.4674 22 11.7148C22 9.03759 19.5249 8.03807 17.5 10.1062C15.4751 8.03807 13 9.03759 13 11.7148Z" fill="currentColor"/></svg>
+                <div>
+                    <div class="header-title">我的自选</div>
+                    <div class="header-subtitle"><span id="headerTime">加载中...</span></div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-icon" id="btnSyncHoldings" title="同步持仓"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></button>
+                <button class="btn-icon sort-btn manual" id="btnSort" title="排序"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path class="arrow-up" d="M3 9l4 -4l4 4m-4 -4v14"/><path class="arrow-down" d="M21 15l-4 4l-4 -4m4 4v-14"/></svg></button>
+                <button class="btn-icon" id="btnEditWatchlist" title="编辑自选"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                <button class="btn-icon" id="btnRefresh" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+                <button class="btn-icon" id="btnAddWatchlist" title="添加自选"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            </div>
+        </header>
+        <div class="divider"></div>
+        <div class="index-panel" id="indexPanel">
+            <div class="index-toggle" id="indexToggle"><span class="index-toggle-text">大盘指数</span><span class="index-toggle-arrow">▼</span></div>
+            <div class="index-grid-container" id="indexGridContainer"><div class="index-grid" id="indexGrid"></div></div>
+        </div>
+        <div class="fund-list" id="fundList"></div>
+        <div class="empty-state" id="emptyState" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><div>暂无自选基金</div></div>
+    </div>
+
+    <div id="holdingsPage" class="page">
+        <header class="header" id="holdingsHeader">
+            <div class="header-title-group" style="color: #00CECA;">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M3.29289 9.29289C3 9.58579 3 10.0572 3 11V17C3 17.9428 3 18.4142 3.29289 18.7071C3.58579 19 4.05719 19 5 19C5.94281 19 6.41421 19 6.70711 18.7071C7 18.4142 7 17.9428 7 17V11C7 10.0572 7 9.58579 6.70711 9.29289C6.41421 9 5.94281 9 5 9C4.05719 9 3.58579 9 3.29289 9.29289Z" fill="currentColor"/><path opacity="0.4" d="M17.2929 2.29289C17 2.58579 17 3.05719 17 4V17C17 17.9428 17 18.4142 17.2929 18.7071C17.5858 19 18.0572 19 19 19C19.9428 19 20.4142 19 20.7071 18.7071C21 18.4142 21 17.9428 21 17V4C21 3.05719 21 2.58579 20.7071 2.29289C20.4142 2 19.9428 2 19 2C18.0572 2 17.5858 2 17.2929 2.29289Z" fill="currentColor"/><path opacity="0.7" d="M10 7C10 6.05719 10 5.58579 10.2929 5.29289C10.5858 5 11.0572 5 12 5C12.9428 5 13.4142 5 13.7071 5.29289C14 5.58579 14 6.05719 14 7V17C14 17.9428 14 18.4142 13.7071 18.7071C13.4142 19 12.9428 19 12 19C11.0572 19 10.5858 19 10.2929 18.7071C10 18.4142 10 17.9428 10 17V7Z" fill="currentColor"/><path d="M3 21.25C2.58579 21.25 2.25 21.5858 2.25 22C2.25 22.4142 2.58579 22.75 3 22.75H21C21.4142 22.75 21.75 22.4142 21.75 22C21.75 21.5858 21.4142 21.25 21 21.25H3Z" fill="currentColor"/></svg>
+                <div>
+                    <div class="header-title" id="holdingsHeaderTitle">我的持仓 <span class="debug-hint">(快速点5下清缓存)</span></div>
+                    <div class="header-subtitle"><span id="holdingsUpdateTime">加载中...</span></div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-icon" id="btnBulkEdit" title="批量编辑"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                <button class="btn-icon" id="btnBackup" title="备份"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></button>
+                <button class="btn-icon" id="btnRefreshHoldings" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+                <button class="btn-icon" id="btnAddHolding" title="添加持仓"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            </div>
+        </header>
+        <div class="divider"></div>
+        <div class="summary-cards" id="summaryCards">
+            <div class="summary-card"><div class="summary-label">总资产</div><div class="summary-value neutral" id="totalAsset">--</div></div>
+            <div class="summary-card"><div class="summary-label">今日收益</div><div class="summary-value" id="todayProfit">--</div></div>
+            <div class="summary-card"><div class="summary-label">累计盈亏</div><div class="summary-value" id="totalProfit">--</div></div>
+        </div>
+        <div id="holdingsList"></div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="bottom-sheet" id="bottomSheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">添加自选基金</div>
+        <div class="input-group"><input type="text" class="input-code" id="inputCode" placeholder="输入6位基金代码" maxlength="6" inputmode="numeric"><button class="btn-add-circle" id="btnConfirmAdd">+</button></div>
+    </div>
+    <div class="bottom-sheet" id="holdingSheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">添加持仓基金</div>
+        <div style="display:flex;flex-direction:column;gap:10px;"><input type="text" class="input-code" id="holdingCode" placeholder="基金代码 (6位)" maxlength="6" inputmode="numeric"><input type="number" class="input-code" id="holdingCost" placeholder="成本净值" step="any" inputmode="decimal"><input type="number" class="input-code" id="holdingShares" placeholder="持有份额" step="any" inputmode="decimal"><button class="btn btn-full" id="confirmAddHoldingSheet" style="background:var(--accent);color:#111;">添加</button></div>
+    </div>
+    <div class="bottom-sheet" id="backupSheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">配置备份</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="menu-item" id="btnExportSheet"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>导出配置</span></div>
+            <div class="menu-item" id="btnCopyConfig"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span>复制配置</span></div>
+            <div class="menu-item" id="btnImportSheet"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>导入配置</span></div>
+            <input type="file" id="importFile" accept=".json" style="display:none;">
+        </div>
+    </div>
+    <div class="toast" id="toast"></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
