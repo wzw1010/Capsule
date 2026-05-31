@@ -1,4 +1,3 @@
-// ========== 注册 Service Worker ==========
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js').catch(() => {});
@@ -6,7 +5,6 @@ if ('serviceWorker' in navigator) {
 }
 
 (() => {
-    // ========== 常量与 DOM 引用 ==========
     const STORAGE_WATCHLIST = 'fund_watchlist_v2';
     const STORAGE_HOLDINGS  = 'fund_holdings';
     const CACHE_KEY         = 'fund_data_cache';
@@ -56,15 +54,13 @@ if ('serviceWorker' in navigator) {
     const holdingsHeaderTitle = $('holdingsHeaderTitle');
     const themeMeta         = $('themeColorMeta');
 
-    // ========== 全局状态 ==========
     let watchlist = [], holdings = {}, fundDataCache = {}, officialDataCache = {};
     let refreshTimer = null, toastTimer = null;
     let sortMode = 'manual', isBulkEditing = false, indexExpanded = false, isEditMode = false;
     let manualOrder = [];
     let openedSwipe = null, swipeStartX = 0, swipeStartY = 0, swipeCurrentX = 0, isSwiping = false;
-    let industryTags = {}; // 用户自定义标签
+    let industryTags = {};
 
-    // ========== 工具函数 ==========
     const escapeHTML = (str) => { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; };
     function showToast(msg, type = '') {
         clearTimeout(toastTimer);
@@ -91,15 +87,10 @@ if ('serviceWorker' in navigator) {
     updateThemeColor();
     window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', updateThemeColor);
 
-    // ========== 行业标签配置 (可自定义) ==========
-    function loadIndustryTags() {
-        try { industryTags = JSON.parse(localStorage.getItem(INDUSTRY_TAGS_KEY)) || {}; } catch { industryTags = {}; }
-    }
+    function loadIndustryTags() { try { industryTags = JSON.parse(localStorage.getItem(INDUSTRY_TAGS_KEY)) || {}; } catch { industryTags = {}; } }
     function saveIndustryTags() { localStorage.setItem(INDUSTRY_TAGS_KEY, JSON.stringify(industryTags)); }
-    function setIndustryTag(code, tag) { industryTags[code] = tag; saveIndustryTags(); }
     function getIndustryForCode(code, name) {
         if (industryTags[code]) return industryTags[code];
-        // 自动匹配关键词（优先长关键词）
         const sorted = [...INDUSTRY_KEYWORDS].sort((a,b) => b.keys.join().length - a.keys.join().length);
         for (const item of sorted) {
             for (const key of item.keys) {
@@ -146,13 +137,7 @@ if ('serviceWorker' in navigator) {
         { keys:['QDII','海外','纳斯达克','标普','道琼斯','全球','德国','日本','亚太','恒生'], tag:'QDII' }
     ];
 
-    // ========== 数据持久化 ==========
-    function loadOfficialCache() {
-        try {
-            const stored = localStorage.getItem(OFFICIAL_CACHE_KEY);
-            if (stored) officialDataCache = JSON.parse(stored);
-        } catch (e) { officialDataCache = {}; }
-    }
+    function loadOfficialCache() { try { const stored = localStorage.getItem(OFFICIAL_CACHE_KEY); if (stored) officialDataCache = JSON.parse(stored); } catch (e) { officialDataCache = {}; } }
     function saveOfficialCache() { localStorage.setItem(OFFICIAL_CACHE_KEY, JSON.stringify(officialDataCache)); }
     function loadManualOrder() { try { manualOrder = JSON.parse(localStorage.getItem(MANUAL_ORDER_KEY)) || []; } catch { manualOrder = []; } }
     function saveManualOrder() { localStorage.setItem(MANUAL_ORDER_KEY, JSON.stringify(manualOrder)); }
@@ -163,7 +148,6 @@ if ('serviceWorker' in navigator) {
     function loadCache() { try { const c = JSON.parse(localStorage.getItem(CACHE_KEY)); if (c) fundDataCache = c; } catch {} }
     function saveCache() { localStorage.setItem(CACHE_KEY, JSON.stringify(fundDataCache)); }
 
-    // ========== API 请求 ==========
     function fetchSingle(code) {
         return new Promise((resolve, reject) => {
             const sid = 'jsonp-' + code;
@@ -246,7 +230,6 @@ if ('serviceWorker' in navigator) {
         }
     }
 
-    // ========== 净值判断 (修复版) ==========
     function shouldUseOfficialValue(code) {
         const co = officialDataCache[code];
         if (!co || co.officialNetValue == null || isNaN(co.officialNetValue)) return false;
@@ -254,7 +237,6 @@ if ('serviceWorker' in navigator) {
         return co.date === today;
     }
 
-    // ========== 自选渲染 ==========
     function renderWatchlist() {
         if (!watchlist.length) { fundList.innerHTML = ''; emptyState.style.display = 'block'; return; }
         emptyState.style.display = 'none';
@@ -280,7 +262,7 @@ if ('serviceWorker' in navigator) {
             let tagHtml = '';
             if (tag && INDUSTRY_COLORS[tag]) {
                 const c = INDUSTRY_COLORS[tag];
-                tagHtml = `<span class="industry-tag" style="background:${c.bg}; color:${c.color}; border-color:${c.border};" data-code="${code}">${tag}</span>`;
+                tagHtml = `<span class="industry-tag" style="background:${c.bg}; color:${c.color}; border-color:${c.border};">${tag}</span>`;
             }
             const editActionsHtml = isEditMode ? `
                 <div class="edit-actions show">
@@ -297,21 +279,6 @@ if ('serviceWorker' in navigator) {
             </div>`;
         }).join('');
 
-        // 行业标签点击事件（自定义标签）
-        fundList.querySelectorAll('.industry-tag').forEach(tag => {
-            tag.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const code = tag.dataset.code;
-                const current = industryTags[code] || getIndustryForCode(code, fundDataCache[code]?.name || '');
-                const newTag = prompt('修改行业标签（留空则自动识别）', current || '');
-                if (newTag !== null) {
-                    if (newTag.trim()) setIndustryTag(code, newTag.trim());
-                    else { delete industryTags[code]; saveIndustryTags(); }
-                    renderWatchlist();
-                }
-            });
-        });
-
         if (isEditMode) {
             fundList.querySelectorAll('.move-up-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); moveItemUp(btn.dataset.code); }));
             fundList.querySelectorAll('.move-down-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); moveItemDown(btn.dataset.code); }));
@@ -322,18 +289,8 @@ if ('serviceWorker' in navigator) {
         if (manualOrder.length === watchlist.length && manualOrder.every(c => watchlist.includes(c))) return [...manualOrder];
         return [...watchlist];
     }
-    function moveItemUp(code) {
-        const arr = getManualOrderArray(); const idx = arr.indexOf(code);
-        if (idx <= 0) return;
-        [arr[idx-1], arr[idx]] = [arr[idx], arr[idx-1]];
-        manualOrder = arr; saveManualOrder(); renderWatchlist();
-    }
-    function moveItemDown(code) {
-        const arr = getManualOrderArray(); const idx = arr.indexOf(code);
-        if (idx < 0 || idx >= arr.length-1) return;
-        [arr[idx], arr[idx+1]] = [arr[idx+1], arr[idx]];
-        manualOrder = arr; saveManualOrder(); renderWatchlist();
-    }
+    function moveItemUp(code) { const arr = getManualOrderArray(); const idx = arr.indexOf(code); if (idx <= 0) return; [arr[idx-1], arr[idx]] = [arr[idx], arr[idx-1]]; manualOrder = arr; saveManualOrder(); renderWatchlist(); }
+    function moveItemDown(code) { const arr = getManualOrderArray(); const idx = arr.indexOf(code); if (idx < 0 || idx >= arr.length-1) return; [arr[idx], arr[idx+1]] = [arr[idx+1], arr[idx]]; manualOrder = arr; saveManualOrder(); renderWatchlist(); }
 
     function updateWatchlistCard(code) {
         const wrapper = document.querySelector(`.swipe-wrapper[data-code="${code}"]`);
@@ -352,36 +309,20 @@ if ('serviceWorker' in navigator) {
         }
     }
 
-    // ========== 持仓渲染 ==========
-    function renderHoldingsSkeleton() {
-        holdingsList.innerHTML = '<div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div>';
-    }
-
+    function renderHoldingsSkeleton() { holdingsList.innerHTML = '<div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div>'; }
     function renderHoldings() {
         const codes = Object.keys(holdings);
-        if (codes.length === 0) {
-            holdingsList.innerHTML = '<div class="empty-state">暂无持仓，点击 + 添加</div>';
-            updateSummary({});
-            return;
-        }
+        if (codes.length === 0) { holdingsList.innerHTML = '<div class="empty-state">暂无持仓，点击 + 添加</div>'; updateSummary({}); return; }
         renderHoldingsSkeleton();
         setTimeout(() => refreshHoldingsData(codes), 50);
     }
 
     async function refreshHoldingsData(codes) {
         for (const code of codes) {
-            try {
-                const d = await fetchSingle(code);
-                fundDataCache[code] = { ...fundDataCache[code], fundcode: code, name: d.name, gsz: d.gsz, gszzl: d.gszzl, dwjz: d.dwjz, gztime: d.gztime };
-            } catch (e) {}
-            fetchOfficialData(code).then(od => {
-                if (od) { officialDataCache[code] = od; saveOfficialCache(); }
-                updateHoldingCard(code);
-                updateSummaryFromCurrentCards();
-            }).catch(() => {});
+            try { const d = await fetchSingle(code); fundDataCache[code] = { ...fundDataCache[code], fundcode: code, name: d.name, gsz: d.gsz, gszzl: d.gszzl, dwjz: d.dwjz, gztime: d.gztime }; } catch (e) {}
+            fetchOfficialData(code).then(od => { if (od) { officialDataCache[code] = od; saveOfficialCache(); } updateHoldingCard(code); updateSummaryFromCurrentCards(); }).catch(() => {});
         }
-        const html = buildHoldingsHtml(codes);
-        holdingsList.innerHTML = html;
+        holdingsList.innerHTML = buildHoldingsHtml(codes);
         updateSummaryFromCurrentCards();
         for (const code of codes) {
             const od = await fetchOfficialData(code).catch(() => null);
@@ -403,30 +344,17 @@ if ('serviceWorker' in navigator) {
             const gszzl = useOfficial ? co.officialChange : (parseFloat(d.gszzl) || 0);
             const cost = parseFloat(h.cost) || 0;
             const shares = parseFloat(h.shares) || 0;
-
             const currentVal = gsz * shares;
             const dayProfit = shares * dwjz * (gszzl / 100);
             const totalP = (gsz - cost) * shares;
             const dayYieldRate = gszzl;
             const totalYieldRate = cost ? ((gsz - cost) / cost * 100) : 0;
-
-            totalAsset += currentVal;
-            todayProfitSum += dayProfit;
-            totalProfitSum += totalP;
-
+            totalAsset += currentVal; todayProfitSum += dayProfit; totalProfitSum += totalP;
             const cls = gszzl > 0 ? 'up' : gszzl < 0 ? 'down' : 'zero';
             const profitClass = (v) => v >= 0 ? 'profit-positive' : 'profit-negative';
             const dotClass = useOfficial ? 'updated' : 'pending';
-
             return `<div class="holding-card ${cls}" data-code="${code}">
-                <div class="holding-header">
-                    <div class="holding-header-left">
-                        <span class="update-dot ${dotClass}"></span>
-                        <span class="holding-name">${escapeHTML(h.name || d.name || code)}</span>
-                        <span class="holding-code">${code}</span>
-                    </div>
-                    <span class="holding-amount">${currentVal.toFixed(2)}</span>
-                </div>
+                <div class="holding-header"><div class="holding-header-left"><span class="update-dot ${dotClass}"></span><span class="holding-name">${escapeHTML(h.name || d.name || code)}</span><span class="holding-code">${code}</span></div><span class="holding-amount">${currentVal.toFixed(2)}</span></div>
                 <div class="metrics-row">
                     <div class="metric-card"><span class="metric-label">今日涨幅</span><span class="metric-value ${profitClass(dayYieldRate)}">${dayYieldRate>=0?'+':''}${dayYieldRate.toFixed(2)}%</span></div>
                     <div class="metric-card"><span class="metric-label">日收益</span><span class="metric-value ${profitClass(dayProfit)}">${formatMoney(dayProfit)}</span></div>
@@ -452,7 +380,6 @@ if ('serviceWorker' in navigator) {
         const gszzl = useOfficial ? co.officialChange : (parseFloat(d.gszzl) || 0);
         const cost = parseFloat(h.cost) || 0;
         const shares = parseFloat(h.shares) || 0;
-
         const currentVal = gsz * shares;
         const dayProfit = shares * dwjz * (gszzl / 100);
         const totalP = (gsz - cost) * shares;
@@ -461,22 +388,15 @@ if ('serviceWorker' in navigator) {
         const cls = gszzl > 0 ? 'up' : gszzl < 0 ? 'down' : 'zero';
         const profitClass = (v) => v >= 0 ? 'profit-positive' : 'profit-negative';
         const dotClass = useOfficial ? 'updated' : 'pending';
-
         card.className = 'holding-card ' + cls;
-        const dot = card.querySelector('.update-dot');
-        if (dot) dot.className = 'update-dot ' + dotClass;
-        const amountEl = card.querySelector('.holding-amount');
-        if (amountEl) amountEl.textContent = currentVal.toFixed(2);
+        const dot = card.querySelector('.update-dot'); if (dot) dot.className = 'update-dot ' + dotClass;
+        const amountEl = card.querySelector('.holding-amount'); if (amountEl) amountEl.textContent = currentVal.toFixed(2);
         const metrics = card.querySelectorAll('.metric-value');
         if (metrics.length >= 4) {
-            metrics[0].textContent = (dayYieldRate>=0?'+':'') + dayYieldRate.toFixed(2) + '%';
-            metrics[0].className = 'metric-value ' + profitClass(dayYieldRate);
-            metrics[1].textContent = formatMoney(dayProfit);
-            metrics[1].className = 'metric-value ' + profitClass(dayProfit);
-            metrics[2].textContent = formatMoney(totalP);
-            metrics[2].className = 'metric-value ' + profitClass(totalP);
-            metrics[3].textContent = (totalYieldRate>=0?'+':'') + totalYieldRate.toFixed(2) + '%';
-            metrics[3].className = 'metric-value ' + profitClass(totalYieldRate);
+            metrics[0].textContent = (dayYieldRate>=0?'+':'') + dayYieldRate.toFixed(2) + '%'; metrics[0].className = 'metric-value ' + profitClass(dayYieldRate);
+            metrics[1].textContent = formatMoney(dayProfit); metrics[1].className = 'metric-value ' + profitClass(dayProfit);
+            metrics[2].textContent = formatMoney(totalP); metrics[2].className = 'metric-value ' + profitClass(totalP);
+            metrics[3].textContent = (totalYieldRate>=0?'+':'') + totalYieldRate.toFixed(2) + '%'; metrics[3].className = 'metric-value ' + profitClass(totalYieldRate);
         }
     }
 
@@ -484,12 +404,9 @@ if ('serviceWorker' in navigator) {
         const cards = document.querySelectorAll('#holdingsList .holding-card');
         let totalAsset = 0, todayProfitSum = 0, totalProfitSum = 0;
         cards.forEach(card => {
-            const amount = parseFloat(card.querySelector('.holding-amount')?.textContent) || 0;
-            totalAsset += amount;
-            const dayProfitText = card.querySelectorAll('.metric-value')[1]?.textContent || '0';
-            todayProfitSum += parseFloat(dayProfitText.replace(/[^0-9.-]/g, '')) || 0;
-            const totalProfitText = card.querySelectorAll('.metric-value')[2]?.textContent || '0';
-            totalProfitSum += parseFloat(totalProfitText.replace(/[^0-9.-]/g, '')) || 0;
+            const amount = parseFloat(card.querySelector('.holding-amount')?.textContent) || 0; totalAsset += amount;
+            const dayProfitText = card.querySelectorAll('.metric-value')[1]?.textContent || '0'; todayProfitSum += parseFloat(dayProfitText.replace(/[^0-9.-]/g, '')) || 0;
+            const totalProfitText = card.querySelectorAll('.metric-value')[2]?.textContent || '0'; totalProfitSum += parseFloat(totalProfitText.replace(/[^0-9.-]/g, '')) || 0;
         });
         updateSummary({ totalAsset, todayProfit: todayProfitSum, totalProfit: totalProfitSum });
     }
@@ -504,13 +421,10 @@ if ('serviceWorker' in navigator) {
         document.getElementById('totalProfit').className = 'summary-value ' + totalCls;
     }
 
-    // ========== 批量编辑 ==========
     function enterBulkEditMode() {
         document.querySelectorAll('#holdingsList .holding-card').forEach(card => {
-            const code = card.dataset.code;
-            const h = holdings[code];
-            const metrics = card.querySelector('.metrics-row');
-            if (metrics) metrics.style.display = 'none';
+            const code = card.dataset.code; const h = holdings[code];
+            const metrics = card.querySelector('.metrics-row'); if (metrics) metrics.style.display = 'none';
             let editDiv = card.querySelector('.edit-controls');
             if (!editDiv) { editDiv = document.createElement('div'); editDiv.className = 'edit-controls'; card.appendChild(editDiv); }
             editDiv.innerHTML = `<input type="number" class="edit-cost" value="${h.cost}" step="any" inputmode="decimal" placeholder="成本"><input type="number" class="edit-shares" value="${h.shares}" step="any" inputmode="decimal" placeholder="份额"><button class="btn danger edit-delete-btn">删除</button>`;
@@ -523,33 +437,18 @@ if ('serviceWorker' in navigator) {
             document.querySelectorAll('#holdingsList .holding-card').forEach(card => {
                 const code = card.dataset.code;
                 const costInput = card.querySelector('.edit-cost'), shareInput = card.querySelector('.edit-shares');
-                if (costInput && shareInput) {
-                    const cost = parseFloat(costInput.value), shares = parseFloat(shareInput.value);
-                    if (!isNaN(cost) && cost > 0 && !isNaN(shares) && shares > 0) holdings[code] = { cost, shares, name: holdings[code]?.name || '' };
-                }
-                card.querySelector('.edit-controls')?.remove();
-                const metrics = card.querySelector('.metrics-row'); if (metrics) metrics.style.display = '';
+                if (costInput && shareInput) { const cost = parseFloat(costInput.value), shares = parseFloat(shareInput.value); if (!isNaN(cost) && cost > 0 && !isNaN(shares) && shares > 0) holdings[code] = { cost, shares, name: holdings[code]?.name || '' }; }
+                card.querySelector('.edit-controls')?.remove(); const metrics = card.querySelector('.metrics-row'); if (metrics) metrics.style.display = '';
             });
-            saveHoldings(); isBulkEditing = false; btnBulkEdit.classList.remove('edit-active');
-            renderHoldings(); showToast('批量保存成功');
+            saveHoldings(); isBulkEditing = false; btnBulkEdit.classList.remove('edit-active'); renderHoldings(); showToast('批量保存成功');
         } else { isBulkEditing = true; btnBulkEdit.classList.add('edit-active'); enterBulkEditMode(); }
     });
 
-    // ========== 备份导出 ==========
-    function getConfigJSON() { return JSON.stringify({ watchlist, holdings, manualOrder, industryTags }, null, 2); }
+    function getConfigJSON() { return JSON.stringify({ watchlist, holdings, manualOrder }, null, 2); }
     btnBackup.addEventListener('click', () => { overlay.classList.add('active'); backupSheet.classList.add('active'); });
     function closeBackupSheet() { overlay.classList.remove('active'); backupSheet.classList.remove('active'); }
-    btnExportSheet.addEventListener('click', () => {
-        const data = getConfigJSON(); const blob = new Blob([data], {type:'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'fund_config.json';
-        document.body.appendChild(a); a.click(); document.body.removeChild(a); closeBackupSheet(); showToast('已导出');
-    });
-    btnCopyConfig.addEventListener('click', () => {
-        const data = getConfigJSON();
-        if (navigator.clipboard) navigator.clipboard.writeText(data).then(() => showToast('已复制'));
-        else { const ta = document.createElement('textarea'); ta.value = data; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('已复制'); }
-        closeBackupSheet();
-    });
+    btnExportSheet.addEventListener('click', () => { const data = getConfigJSON(); const blob = new Blob([data], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'fund_config.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); closeBackupSheet(); showToast('已导出'); });
+    btnCopyConfig.addEventListener('click', () => { const data = getConfigJSON(); if (navigator.clipboard) navigator.clipboard.writeText(data).then(() => showToast('已复制')); else { const ta = document.createElement('textarea'); ta.value = data; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('已复制'); } closeBackupSheet(); });
     btnImportSheet.addEventListener('click', () => { importFile.click(); closeBackupSheet(); });
     importFile.addEventListener('change', e => {
         const file = e.target.files[0]; if(!file) return;
@@ -560,22 +459,19 @@ if ('serviceWorker' in navigator) {
                 if (data.watchlist) { watchlist = data.watchlist; saveWatchlist(); }
                 if (data.holdings) { holdings = data.holdings; saveHoldings(); }
                 if (data.manualOrder) { manualOrder = data.manualOrder; saveManualOrder(); }
-                if (data.industryTags) { industryTags = data.industryTags; saveIndustryTags(); }
                 renderWatchlist(); renderHoldings(); refreshAllData(); showToast('导入成功');
             } catch { showToast('文件格式错误','error'); }
         };
         reader.readAsText(file); importFile.value = '';
     });
 
-    // ========== 添加/刷新 ==========
     function addWatchlist(code) {
         code = String(code).trim();
         if (!/^\d{6}$/.test(code)) return showToast('请输入6位数字代码','error'), false;
         if (watchlist.includes(code)) return showToast('已存在','error'), false;
         watchlist.push(code); saveWatchlist(); fundDataCache[code] = null;
         if (!manualOrder.includes(code)) { manualOrder.push(code); saveManualOrder(); }
-        renderWatchlist();
-        fetchAndUpdate(code).then(() => { renderWatchlist(); saveCache(); scheduleRefresh(); });
+        renderWatchlist(); fetchAndUpdate(code).then(() => { renderWatchlist(); saveCache(); scheduleRefresh(); });
         showToast('已添加','success'); return true;
     }
     function removeWatchlist(code) {
@@ -595,10 +491,8 @@ if ('serviceWorker' in navigator) {
         scheduleRefresh(); showToast(`已同步 ${added} 只基金`);
     }
     async function fetchAndUpdate(code) {
-        try {
-            const d = await fetchSingle(code);
-            fundDataCache[code] = { fundcode: d.fundcode, name: d.name || '未知', dwjz: d.dwjz, gsz: d.gsz, gszzl: d.gszzl, gztime: d.gztime || '' };
-        } catch { fundDataCache[code] = { ...fundDataCache[code], _error: true, name: fundDataCache[code]?.name || '获取失败' }; }
+        try { const d = await fetchSingle(code); fundDataCache[code] = { fundcode: d.fundcode, name: d.name || '未知', dwjz: d.dwjz, gsz: d.gsz, gszzl: d.gszzl, gztime: d.gztime || '' }; }
+        catch { fundDataCache[code] = { ...fundDataCache[code], _error: true, name: fundDataCache[code]?.name || '获取失败' }; }
     }
     async function fetchAllFunds() {
         const allCodes = [...new Set([...watchlist, ...Object.keys(holdings)])];
@@ -607,14 +501,9 @@ if ('serviceWorker' in navigator) {
         while (queue.length) { const batch = queue.splice(0, MAX_CON); tasks.push(...batch.map(fetchAndUpdate)); await Promise.allSettled(tasks); tasks.length = 0; }
         renderWatchlist(); renderHoldings(); saveCache(); updateTimeDisplay();
     }
-    function scheduleRefresh() {
-        clearTimeout(refreshTimer);
-        const interval = isTradingTime() ? REFRESH_TRADING : REFRESH_IDLE;
-        refreshTimer = setTimeout(() => { fetchAllFunds().then(scheduleRefresh); }, interval);
-    }
+    function scheduleRefresh() { clearTimeout(refreshTimer); const interval = isTradingTime() ? REFRESH_TRADING : REFRESH_IDLE; refreshTimer = setTimeout(() => { fetchAllFunds().then(scheduleRefresh); }, interval); }
     function refreshAllData() { return fetchAllFunds().then(scheduleRefresh); }
 
-    // ========== 事件绑定 ==========
     btnAddWatchlist.addEventListener('click', () => { overlay.classList.add('active'); bottomSheet.classList.add('active'); inputCode.value = ''; inputCode.focus(); });
     btnAddHolding.addEventListener('click', () => { overlay.classList.add('active'); holdingSheet.classList.add('active'); holdingCode.value = ''; holdingCost.value = ''; holdingShares.value = ''; });
     overlay.addEventListener('click', () => { overlay.classList.remove('active'); bottomSheet.classList.remove('active'); holdingSheet.classList.remove('active'); backupSheet.classList.remove('active'); });
@@ -637,115 +526,50 @@ if ('serviceWorker' in navigator) {
     });
 
     const SORT_MODES = ['change-desc', 'change-asc', 'manual'];
-    btnSort.addEventListener('click', () => {
-        const currentIdx = SORT_MODES.indexOf(sortMode); sortMode = SORT_MODES[(currentIdx + 1) % SORT_MODES.length];
-        btnSort.classList.remove('desc', 'asc', 'manual');
-        if (sortMode === 'change-desc') btnSort.classList.add('desc'); else if (sortMode === 'change-asc') btnSort.classList.add('asc'); else btnSort.classList.add('manual');
-        renderWatchlist();
-    });
-    btnEditWatchlist.addEventListener('click', () => {
-        isEditMode = !isEditMode;
-        btnEditWatchlist.classList.toggle('edit-active', isEditMode);
-        if (isEditMode && openedSwipe) { closeSwipe(openedSwipe); openedSwipe = null; }
-        renderWatchlist();
-    });
+    btnSort.addEventListener('click', () => { const currentIdx = SORT_MODES.indexOf(sortMode); sortMode = SORT_MODES[(currentIdx + 1) % SORT_MODES.length]; btnSort.classList.remove('desc', 'asc', 'manual'); if (sortMode === 'change-desc') btnSort.classList.add('desc'); else if (sortMode === 'change-asc') btnSort.classList.add('asc'); else btnSort.classList.add('manual'); renderWatchlist(); });
+    btnEditWatchlist.addEventListener('click', () => { isEditMode = !isEditMode; btnEditWatchlist.classList.toggle('edit-active', isEditMode); if (isEditMode && openedSwipe) { closeSwipe(openedSwipe); openedSwipe = null; } renderWatchlist(); });
 
     btnRefresh.addEventListener('click', () => { btnRefresh.classList.add('refreshing'); setTimeout(() => btnRefresh.classList.remove('refreshing'), 900); refreshAllData(); });
     btnRefreshHoldings.addEventListener('click', () => { btnRefreshHoldings.classList.add('refreshing'); setTimeout(() => btnRefreshHoldings.classList.remove('refreshing'), 900); refreshAllData(); });
     btnSyncHoldings.addEventListener('click', syncHoldingsToWatchlist);
 
     indexToggle.addEventListener('click', () => {
-        indexExpanded = !indexExpanded;
-        const container = indexGridContainer;
-        if (indexExpanded) {
-            container.style.height = 'auto'; const targetHeight = container.offsetHeight;
-            container.style.height = '0px'; container.offsetHeight; container.style.height = targetHeight + 'px';
-            indexToggle.classList.add('expanded');
-            const onTransitionEnd = () => { container.style.height = 'auto'; container.removeEventListener('transitionend', onTransitionEnd); };
-            container.addEventListener('transitionend', onTransitionEnd);
-        } else {
-            const currentHeight = container.offsetHeight;
-            container.style.height = currentHeight + 'px'; container.offsetHeight; container.style.height = '0px';
-            indexToggle.classList.remove('expanded');
-        }
+        indexExpanded = !indexExpanded; const container = indexGridContainer;
+        if (indexExpanded) { container.style.height = 'auto'; const targetHeight = container.offsetHeight; container.style.height = '0px'; container.offsetHeight; container.style.height = targetHeight + 'px'; indexToggle.classList.add('expanded'); const onTransitionEnd = () => { container.style.height = 'auto'; container.removeEventListener('transitionend', onTransitionEnd); }; container.addEventListener('transitionend', onTransitionEnd); }
+        else { const currentHeight = container.offsetHeight; container.style.height = currentHeight + 'px'; container.offsetHeight; container.style.height = '0px'; indexToggle.classList.remove('expanded'); }
     });
 
-    // ========== 左滑删除 (编辑模式下完全禁用) ==========
-    fundList.addEventListener('touchstart', (e) => {
-        if (isEditMode || isBulkEditing) return;
-        const wrapper = e.target.closest('.swipe-wrapper');
-        if (!wrapper) return;
-        if (openedSwipe && openedSwipe !== wrapper) { closeSwipe(openedSwipe); openedSwipe = null; }
-        const touch = e.touches[0]; swipeStartX = touch.clientX; swipeStartY = touch.clientY; swipeCurrentX = 0; isSwiping = false;
-    }, { passive: false });
+    fundList.addEventListener('touchstart', (e) => { if (isEditMode || isBulkEditing) return; const wrapper = e.target.closest('.swipe-wrapper'); if (!wrapper) return; if (openedSwipe && openedSwipe !== wrapper) { closeSwipe(openedSwipe); openedSwipe = null; } const touch = e.touches[0]; swipeStartX = touch.clientX; swipeStartY = touch.clientY; swipeCurrentX = 0; isSwiping = false; }, { passive: false });
+    fundList.addEventListener('touchmove', (e) => { if (isEditMode || isBulkEditing) return; const wrapper = e.target.closest('.swipe-wrapper'); if (!wrapper) return; const touch = e.touches[0]; const deltaX = touch.clientX - swipeStartX; const deltaY = touch.clientY - swipeStartY; if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) { e.preventDefault(); isSwiping = true; swipeCurrentX = Math.min(0, Math.max(-80, deltaX)); const content = wrapper.querySelector('.swipe-content'); if (content) content.style.transform = `translateX(${swipeCurrentX}px)`; const delBtn = wrapper.querySelector('.swipe-delete'); if (delBtn) { if (swipeCurrentX < -40) delBtn.classList.add('active'); else delBtn.classList.remove('active'); } } }, { passive: false });
+    fundList.addEventListener('touchend', (e) => { if (isEditMode || isBulkEditing) return; const wrapper = e.target.closest('.swipe-wrapper'); if (!wrapper || !isSwiping) return; isSwiping = false; const content = wrapper.querySelector('.swipe-content'); if (swipeCurrentX < -40) { if (content) content.style.transform = 'translateX(-80px)'; const delBtn = wrapper.querySelector('.swipe-delete'); if (delBtn) delBtn.classList.add('active'); if (openedSwipe && openedSwipe !== wrapper) closeSwipe(openedSwipe); openedSwipe = wrapper; } else { if (content) content.style.transform = 'translateX(0)'; const delBtn = wrapper.querySelector('.swipe-delete'); if (delBtn) delBtn.classList.remove('active'); openedSwipe = null; } });
+    fundList.addEventListener('click', (e) => { if (isEditMode || isBulkEditing) return; const deleteBtn = e.target.closest('.swipe-delete'); if (deleteBtn && deleteBtn.classList.contains('active')) { const wrapper = deleteBtn.closest('.swipe-wrapper'); if (wrapper) { removeWatchlist(wrapper.dataset.code); openedSwipe = null; } } });
+    document.addEventListener('touchstart', (e) => { if (isEditMode || isBulkEditing) return; if (openedSwipe && !e.target.closest('.swipe-wrapper')) { closeSwipe(openedSwipe); openedSwipe = null; } }, { passive: true });
+    function closeSwipe(wrapper) { if (!wrapper) return; const content = wrapper.querySelector('.swipe-content'); if (content) content.style.transform = 'translateX(0)'; const delBtn = wrapper.querySelector('.swipe-delete'); if (delBtn) delBtn.classList.remove('active'); }
 
-    fundList.addEventListener('touchmove', (e) => {
-        if (isEditMode || isBulkEditing) return;
-        const wrapper = e.target.closest('.swipe-wrapper');
-        if (!wrapper) return;
-        const touch = e.touches[0]; const deltaX = touch.clientX - swipeStartX; const deltaY = touch.clientY - swipeStartY;
-        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
-            e.preventDefault(); isSwiping = true;
-            swipeCurrentX = Math.min(0, Math.max(-80, deltaX));
-            const content = wrapper.querySelector('.swipe-content');
-            if (content) content.style.transform = `translateX(${swipeCurrentX}px)`;
-            const delBtn = wrapper.querySelector('.swipe-delete');
-            if (delBtn) { if (swipeCurrentX < -40) delBtn.classList.add('active'); else delBtn.classList.remove('active'); }
-        }
-    }, { passive: false });
-
-    fundList.addEventListener('touchend', (e) => {
-        if (isEditMode || isBulkEditing) return;
-        const wrapper = e.target.closest('.swipe-wrapper');
-        if (!wrapper || !isSwiping) return;
-        isSwiping = false;
-        const content = wrapper.querySelector('.swipe-content');
-        if (swipeCurrentX < -40) {
-            if (content) content.style.transform = 'translateX(-80px)';
-            const delBtn = wrapper.querySelector('.swipe-delete'); if (delBtn) delBtn.classList.add('active');
-            if (openedSwipe && openedSwipe !== wrapper) closeSwipe(openedSwipe);
-            openedSwipe = wrapper;
-        } else {
-            if (content) content.style.transform = 'translateX(0)';
-            const delBtn = wrapper.querySelector('.swipe-delete'); if (delBtn) delBtn.classList.remove('active');
-            openedSwipe = null;
-        }
-    });
-
-    fundList.addEventListener('click', (e) => {
-        if (isEditMode || isBulkEditing) return;
-        const deleteBtn = e.target.closest('.swipe-delete');
-        if (deleteBtn && deleteBtn.classList.contains('active')) {
-            const wrapper = deleteBtn.closest('.swipe-wrapper');
-            if (wrapper) { removeWatchlist(wrapper.dataset.code); openedSwipe = null; }
-        }
-    });
-
-    document.addEventListener('touchstart', (e) => {
-        if (isEditMode || isBulkEditing) return;
-        if (openedSwipe && !e.target.closest('.swipe-wrapper')) { closeSwipe(openedSwipe); openedSwipe = null; }
-    }, { passive: true });
-
-    function closeSwipe(wrapper) {
-        if (!wrapper) return;
-        const content = wrapper.querySelector('.swipe-content');
-        if (content) content.style.transform = 'translateX(0)';
-        const delBtn = wrapper.querySelector('.swipe-delete');
-        if (delBtn) delBtn.classList.remove('active');
-    }
-
-    // ========== 时间与刷新 ==========
     function updateTimeDisplay() {
         const now = new Date();
         const timeStr = now.toLocaleString('zh-CN', { hour12: false, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
         headerTime.textContent = timeStr; holdingsUpdateTime.textContent = timeStr;
     }
 
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') refreshAllData();
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refreshAllData(); });
+
+    // 快速点5下清除官方净值缓存
+    let clickCount = 0, clickTimer = null;
+    holdingsHeaderTitle.addEventListener('click', () => {
+        clickCount++;
+        if (clickCount >= 5) {
+            clearTimeout(clickTimer); clickCount = 0;
+            localStorage.removeItem(OFFICIAL_CACHE_KEY);
+            officialDataCache = {};
+            showToast('✅ 官方净值缓存已清除，刷新中...');
+            refreshAllData();
+        } else {
+            clearTimeout(clickTimer);
+            clickTimer = setTimeout(() => { clickCount = 0; }, 1500);
+        }
     });
 
-    // ========== 启动 ==========
     loadWatchlist(); loadHoldings(); loadCache(); loadOfficialCache(); loadManualOrder(); loadIndustryTags();
     renderWatchlist();
     refreshAllData().then(() => { updateTimeDisplay(); setInterval(updateTimeDisplay, 60000); });

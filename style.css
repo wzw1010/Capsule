@@ -51,7 +51,6 @@ body {
     background: var(--bg-primary);
     color: var(--text-primary);
     min-height: 100dvh;
-    padding-top: var(--safe-top);
     padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px);
     overflow-x: hidden;
     user-select: none; -webkit-user-select: none;
@@ -66,7 +65,7 @@ body {
     width: 100%; max-width: 520px; background: var(--bg-primary);
     display: flex; justify-content: space-around; align-items: center;
     height: var(--nav-height); padding-bottom: var(--safe-bottom);
-    z-index: 50; border-top: 1px solid var(--border-subtle);
+    z-index: 50;
 }
 .nav-item { display: flex; align-items: center; justify-content: center; width: 48px; height: 40px; border-radius: 14px; color: var(--text-tertiary); transition: 0.2s; cursor: pointer; }
 .nav-item.active { color: var(--accent); box-shadow: 0 0 14px rgba(0,206,202,0.18); }
@@ -77,12 +76,14 @@ body {
 
 .header {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 2px 8px; position: sticky; top: var(--safe-top); z-index: 10;
+    position: sticky; top: 0; z-index: 10;
     background: var(--header-gradient);
     backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
     margin-left: -14px; margin-right: -14px;
     padding-left: 16px; padding-right: 16px;
     min-height: 50px;
+    padding-top: calc(var(--safe-top) + 10px);
+    margin-top: calc(-1 * var(--safe-top));
 }
 .header-title-group { display: flex; align-items: center; gap: 10px; }
 .header-title-group svg { width: 24px; height: 24px; fill: currentColor; stroke: none; }
@@ -160,7 +161,7 @@ body {
 .swipe-delete svg { width: 16px; height: 16px; opacity: 0.9; flex-shrink: 0; }
 
 .fund-card-left { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
-.industry-tag { font-size: 0.55rem; padding: 2px 6px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; border: 1px solid; font-weight: 600; cursor: pointer; }
+.industry-tag { font-size: 0.55rem; padding: 2px 6px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; border: 1px solid; font-weight: 600; }
 .fund-name { font-size: 0.78rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
 .fund-code { font-size: 0.6rem; color: var(--text-tertiary); white-space: nowrap; flex-shrink: 0; margin-left: 2px; }
 .change-percent { font-size: 0.8rem; font-weight: 700; padding: 2px 6px; border-radius: 6px; letter-spacing: 0.02em; white-space: nowrap; flex-shrink: 0; }
@@ -231,3 +232,19 @@ body {
 .skeleton { background: linear-gradient(90deg, var(--bg-card) 25%, rgba(255,255,255,0.1) 50%, var(--bg-card) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
 .skeleton-card { height: 44px; border-radius: var(--card-radius-sm); margin-bottom: 6px; }
 @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* 浅色模式下的可读性优化 */
+@media (prefers-color-scheme: light) {
+    .toast {
+        color: #000;
+        background: rgba(255,255,255,0.9);
+        border-color: rgba(0,0,0,0.15);
+    }
+    .edit-controls input {
+        color: #000;
+        background: rgba(0,0,0,0.05);
+    }
+    .metric-value {
+        color: #000;
+    }
+}
