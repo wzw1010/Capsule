@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Capsule•基金跟踪</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <!-- 关键：改为 black-translucent 让状态栏背景透明，渐变才能透出来 -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#FF9500" id="themeColorMeta">
     <link rel="apple-touch-icon" href="icon-1024.png">
@@ -34,7 +33,6 @@
             --safe-bottom: env(safe-area-inset-bottom, 16px);
             --safe-top: env(safe-area-inset-top, 0px);
             --nav-height: 56px;
-            /* 深色模式顶部渐变从纯黑开始 */
             --header-gradient: linear-gradient(to bottom, #000000 60%, transparent);
             color-scheme: dark;
         }
@@ -52,8 +50,7 @@
                 --up-bg: rgba(238,59,59,0.1);
                 --down-color: #34a853;
                 --down-bg: rgba(52,168,83,0.1);
-                /* 浅色模式顶部从橙色渐变到浅灰 */
-                --header-gradient: linear-gradient(to bottom, #FF9500 0%, #f2f2f7 100%);
+                --header-gradient: linear-gradient(to bottom, #FF9500 20%, #f2f2f7 100%);
                 color-scheme: light;
             }
         }
@@ -65,14 +62,25 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100dvh;
-            padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px);
             overflow-x: hidden;
             user-select: none; -webkit-user-select: none;
             -webkit-font-smoothing: antialiased;
             transition: background 0.3s, color 0.3s;
+            display: flex;
+            flex-direction: column;
         }
 
-        .app-container { max-width: 520px; margin: 0 auto; padding: 0 14px; }
+        .app-container {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 0 14px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page { display: none; flex: 1; flex-direction: column; }
+        .page.active { display: flex; }
 
         .bottom-nav {
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
@@ -82,16 +90,12 @@
             z-index: 50;
         }
         .nav-item { display: flex; align-items: center; justify-content: center; width: 48px; height: 40px; border-radius: 14px; color: var(--text-tertiary); transition: 0.2s; cursor: pointer; }
-        .nav-item.active { color: var(--accent); box-shadow: 0 0 14px rgba(0,206,202,0.18); }
+        .nav-item.active { color: var(--accent); }
         .nav-item svg { width: 24px; height: 24px; fill: currentColor; stroke: none; }
-
-        .page { display: none; }
-        .page.active { display: block; }
 
         .header {
             display: flex; align-items: center; justify-content: space-between;
             position: sticky; top: 0; z-index: 10;
-            /* 渐变从页面顶部开始，覆盖状态栏区域 */
             background: var(--header-gradient);
             backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             margin-left: -14px; margin-right: -14px;
@@ -125,13 +129,7 @@
         .sort-btn.asc .arrow-down { opacity: 0.3; }
         .sort-btn.manual .arrow-up, .sort-btn.manual .arrow-down { opacity: 1; }
 
-        .divider {
-            margin: 0 0 8px 0; height: 1px;
-            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 15%, rgba(128,128,128,0.15) 50%, rgba(255,255,255,0.06) 85%, transparent 100%);
-            opacity: 0.8;
-        }
-
-        .fund-list { display: flex; flex-direction: column; gap: 6px; padding-bottom: 8px; }
+        .fund-list { flex: 1; display: flex; flex-direction: column; gap: 6px; padding-bottom: 8px; }
 
         .index-panel { margin-bottom: 12px; border-radius: var(--card-radius-sm); background: var(--bg-card); border: 1px solid var(--border-subtle); overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
         .index-toggle { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; cursor: pointer; user-select: none; background: transparent; }
@@ -139,7 +137,7 @@
         .index-toggle-arrow { font-size: 0.7rem; color: var(--text-tertiary); transition: transform 0.3s ease; display: inline-block; }
         .index-toggle.expanded .index-toggle-arrow { transform: rotate(180deg); }
 
-        .index-grid-container { height: 0; overflow: hidden; transition: height 0.3s ease-out; padding: 0 12px; }
+        .index-grid-container { height: auto; overflow: hidden; padding: 0 12px; }
         .index-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; padding-bottom: 10px; }
         .index-metric-card { background: var(--bg-summary); border-radius: 10px; padding: 12px 8px; text-align: center; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.13); }
         .index-metric-name { font-size: 0.55rem; color: var(--text-tertiary); }
@@ -178,7 +176,7 @@
         .industry-tag { font-size: 0.55rem; padding: 2px 6px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; border: 1px solid; font-weight: 600; }
         .fund-name { font-size: 0.78rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
         .fund-code { font-size: 0.6rem; color: var(--text-tertiary); white-space: nowrap; flex-shrink: 0; margin-left: 2px; }
-        .change-percent { font-size: 0.8rem; font-weight: 700; padding: 2px 6px; border-radius: 6px; letter-spacing: 0.02em; white-space: nowrap; flex-shrink: 0; }
+        .change-percent { font-size: 0.8rem; font-weight: 700; padding: 2px 6px; border-radius: 6px; letter-spacing: 0.02em; white-space: nowrap; flex-shrink: 0; min-width: 62px; text-align: center; }
         .change-percent.up   { color: var(--up-color); background: var(--up-bg); }
         .change-percent.down { color: var(--down-color); background: var(--down-bg); }
         .change-percent.zero { color: var(--text-tertiary); background: rgba(128,128,128,0.05); }
@@ -220,7 +218,7 @@
         .update-dot.pending { background: #FF9500; }
         .holding-name { font-weight: 600; font-size: 0.8rem; }
         .holding-code { font-size: 0.6rem; color: var(--text-tertiary); }
-        .holding-amount { font-weight: 700; font-size: 1rem; color: var(--text-primary); }
+        .holding-amount { font-weight: 700; font-size: 1rem; color: var(--text-primary); min-width: 100px; text-align: center; }
 
         .metrics-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; }
         .metric-card { background: rgba(255,255,255,0.04); border-radius: 10px; padding: 8px 5px; text-align: center; display: flex; flex-direction: column; gap: 3px; }
@@ -247,20 +245,10 @@
         .skeleton-card { height: 44px; border-radius: var(--card-radius-sm); margin-bottom: 6px; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-        /* 浅色模式可读性优化 */
         @media (prefers-color-scheme: light) {
-            .toast {
-                color: #000;
-                background: rgba(255,255,255,0.9);
-                border-color: rgba(0,0,0,0.15);
-            }
-            .edit-controls input {
-                color: #000;
-                background: rgba(0,0,0,0.05);
-            }
-            .metric-value {
-                color: #000;
-            }
+            .toast { color: #000; background: rgba(255,255,255,0.9); border-color: rgba(0,0,0,0.15); }
+            .edit-controls input { color: #000; background: rgba(0,0,0,0.05); }
+            .metric-value { color: #000; }
         }
     </style>
 </head>
@@ -292,10 +280,9 @@
                 <button class="btn-icon" id="btnAddWatchlist" title="添加自选"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
             </div>
         </header>
-        <div class="divider"></div>
 
         <div class="index-panel" id="indexPanel">
-            <div class="index-toggle" id="indexToggle"><span class="index-toggle-text">大盘指数</span><span class="index-toggle-arrow">▼</span></div>
+            <div class="index-toggle expanded" id="indexToggle"><span class="index-toggle-text">大盘指数</span><span class="index-toggle-arrow">▼</span></div>
             <div class="index-grid-container" id="indexGridContainer"><div class="index-grid" id="indexGrid"></div></div>
         </div>
 
@@ -319,7 +306,6 @@
                 <button class="btn-icon" id="btnAddHolding" title="添加持仓"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
             </div>
         </header>
-        <div class="divider"></div>
         <div class="summary-cards" id="summaryCards">
             <div class="summary-card"><div class="summary-label">总资产</div><div class="summary-value neutral" id="totalAsset">--</div></div>
             <div class="summary-card"><div class="summary-label">今日收益</div><div class="summary-value" id="todayProfit">--</div></div>
@@ -352,7 +338,6 @@
     <div class="toast" id="toast"></div>
 </div>
 <script>
-    // Service Worker 注册 (可选，如果不需要可删除此行)
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/sw.js').catch(() => {});
@@ -365,7 +350,6 @@
         const CACHE_KEY         = 'fund_data_cache';
         const OFFICIAL_CACHE_KEY = 'official_data_cache';
         const MANUAL_ORDER_KEY  = 'manual_order';
-        const INDUSTRY_TAGS_KEY = 'industry_tags';
         const REFRESH_TRADING   = 30000;
         const REFRESH_IDLE      = 300000;
         const FUND_API          = 'https://fundgz.1234567.com.cn/js/';
@@ -411,10 +395,9 @@
 
         let watchlist = [], holdings = {}, fundDataCache = {}, officialDataCache = {};
         let refreshTimer = null, toastTimer = null;
-        let sortMode = 'manual', isBulkEditing = false, indexExpanded = false, isEditMode = false;
+        let sortMode = 'manual', isBulkEditing = false, indexExpanded = true, isEditMode = false;
         let manualOrder = [];
         let openedSwipe = null, swipeStartX = 0, swipeStartY = 0, swipeCurrentX = 0, isSwiping = false;
-        let industryTags = {};
 
         const escapeHTML = (str) => { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; };
         function showToast(msg, type = '') {
@@ -429,7 +412,6 @@
             const m = now.getHours() * 60 + now.getMinutes();
             return (m >= 570 && m <= 690) || (m >= 780 && m <= 900);
         }
-        function isTradingDay() { return new Date().getDay() !== 0 && new Date().getDay() !== 6; }
         function formatMoney(val) { return (val >= 0 ? '+' : '') + val.toFixed(2); }
         function getTodayStr() {
             const now = new Date();
@@ -442,9 +424,7 @@
         updateThemeColor();
         window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', updateThemeColor);
 
-        function loadIndustryTags() { try { industryTags = JSON.parse(localStorage.getItem(INDUSTRY_TAGS_KEY)) || {}; } catch { industryTags = {}; } }
         function getIndustryForCode(code, name) {
-            if (industryTags[code]) return industryTags[code];
             const sorted = [...INDUSTRY_KEYWORDS].sort((a,b) => b.keys.join().length - a.keys.join().length);
             for (const item of sorted) {
                 for (const key of item.keys) {
@@ -888,9 +868,19 @@
         btnSyncHoldings.addEventListener('click', syncHoldingsToWatchlist);
 
         indexToggle.addEventListener('click', () => {
-            indexExpanded = !indexExpanded; const container = indexGridContainer;
-            if (indexExpanded) { container.style.height = 'auto'; const targetHeight = container.offsetHeight; container.style.height = '0px'; container.offsetHeight; container.style.height = targetHeight + 'px'; indexToggle.classList.add('expanded'); const onTransitionEnd = () => { container.style.height = 'auto'; container.removeEventListener('transitionend', onTransitionEnd); }; container.addEventListener('transitionend', onTransitionEnd); }
-            else { const currentHeight = container.offsetHeight; container.style.height = currentHeight + 'px'; container.offsetHeight; container.style.height = '0px'; indexToggle.classList.remove('expanded'); }
+            indexExpanded = !indexExpanded;
+            const container = indexGridContainer;
+            if (indexExpanded) {
+                container.style.height = 'auto'; const targetHeight = container.offsetHeight;
+                container.style.height = '0px'; container.offsetHeight; container.style.height = targetHeight + 'px';
+                indexToggle.classList.add('expanded');
+                const onTransitionEnd = () => { container.style.height = 'auto'; container.removeEventListener('transitionend', onTransitionEnd); };
+                container.addEventListener('transitionend', onTransitionEnd);
+            } else {
+                const currentHeight = container.offsetHeight;
+                container.style.height = currentHeight + 'px'; container.offsetHeight; container.style.height = '0px';
+                indexToggle.classList.remove('expanded');
+            }
         });
 
         fundList.addEventListener('touchstart', (e) => { if (isEditMode || isBulkEditing) return; const wrapper = e.target.closest('.swipe-wrapper'); if (!wrapper) return; if (openedSwipe && openedSwipe !== wrapper) { closeSwipe(openedSwipe); openedSwipe = null; } const touch = e.touches[0]; swipeStartX = touch.clientX; swipeStartY = touch.clientY; swipeCurrentX = 0; isSwiping = false; }, { passive: false });
@@ -908,7 +898,6 @@
 
         document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refreshAllData(); });
 
-        // 快速点5下清除官方净值缓存 (带Toast提示)
         let clickCount = 0, clickTimer = null;
         holdingsHeaderTitle.addEventListener('click', () => {
             clickCount++;
@@ -924,7 +913,7 @@
             }
         });
 
-        loadWatchlist(); loadHoldings(); loadCache(); loadOfficialCache(); loadManualOrder(); loadIndustryTags();
+        loadWatchlist(); loadHoldings(); loadCache(); loadOfficialCache(); loadManualOrder();
         renderWatchlist();
         refreshAllData().then(() => { updateTimeDisplay(); setInterval(updateTimeDisplay, 60000); });
         fetchIndexData();
