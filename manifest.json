@@ -1,0 +1,18 @@
+{
+  "name": "Capsule·基金跟踪",
+  "short_name": "Capsule",
+  "description": "实时基金估值与持仓收益跟踪",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "icon-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
