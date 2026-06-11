@@ -151,6 +151,9 @@
         if (typeof toggleThemeRefresh === 'function') toggleThemeRefresh();
     }
 
+    // ===== 修复浅色模式切换 =====
+    window.applyTheme = applyTheme;
+
     function initTheme() {
         const saved = localStorage.getItem(THEME_KEY);
         currentTheme = (saved === 'dark' || saved === 'light') ? saved : 'dark';
@@ -1456,9 +1459,11 @@
     fetchIndexData();
     scheduleIndexRefresh();
     updateMenuButtonState();
-// ===== 为 Scriptable 小组件提供数据接口 =====
+
+    // ===== 为 Scriptable 小组件提供数据接口 =====
     if (window.location.search.includes('export=profit')) {
         document.body.innerHTML = `<pre>${JSON.stringify(accountProfitHistory)}</pre>`;
         return;
     }
+
 })();
