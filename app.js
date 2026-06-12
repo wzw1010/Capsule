@@ -1,6 +1,13 @@
-/* ===== Capsule · app.js ===== */
+/* ===== Capsule · app.js (完整修复版) ===== */
 
 (function() {
+    // ========== 【必须在最前面】为 Scriptable 小组件提供数据接口 ==========
+    if (window.location.search.includes('export=profit')) {
+        const history = JSON.parse(localStorage.getItem('account_profit_history') || '[]');
+        document.body.innerHTML = `<pre>${JSON.stringify(history)}</pre>`;
+        return; // 直接退出，不渲染页面
+    }
+
     /* ── 常量 ── */
     const STORAGE_WATCHLIST = 'fund_watchlist_v2';
     const STORAGE_HOLDINGS = 'fund_holdings';
@@ -145,13 +152,15 @@
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem(THEME_KEY, theme);
         document.getElementById('themeColorMeta').setAttribute('content', theme === 'dark' ? '#000000' : '#ffffff');
-        document.getElementById('themeCheckDark').style.visibility = theme === 'dark' ? 'visible' : 'hidden';
-        document.getElementById('themeCheckLight').style.visibility = theme === 'light' ? 'visible' : 'hidden';
+        const checkDark = document.getElementById('themeCheckDark');
+        const checkLight = document.getElementById('themeCheckLight');
+        if (checkDark) checkDark.style.visibility = theme === 'dark' ? 'visible' : 'hidden';
+        if (checkLight) checkLight.style.visibility = theme === 'light' ? 'visible' : 'hidden';
         currentTheme = theme;
         if (typeof toggleThemeRefresh === 'function') toggleThemeRefresh();
     }
 
-    // ===== 修复浅色模式切换 =====
+    // ===== 暴露到全局，修复浅色模式切换 =====
     window.applyTheme = applyTheme;
 
     function initTheme() {
@@ -813,7 +822,6 @@
     }
 
     function renderHoldings(forceRefresh = false) {
-        // 先销毁所有趋势图实例
         Object.keys(trendCharts).forEach(code => {
             if (trendCharts[code]) { trendCharts[code].destroy(); delete trendCharts[code]; }
         });
@@ -1459,11 +1467,5 @@
     fetchIndexData();
     scheduleIndexRefresh();
     updateMenuButtonState();
-
-    // ===== 为 Scriptable 小组件提供数据接口 =====
-    if (window.location.search.includes('export=profit')) {
-        document.body.innerHTML = `<pre>${JSON.stringify(accountProfitHistory)}</pre>`;
-        return;
-    }
 
 })();
