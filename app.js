@@ -1,13 +1,6 @@
-/* ===== Capsule · app.js (完整修复版) ===== */
+/* ===== Capsule · app.js (纯净版，无小组件接口) ===== */
 
 (function() {
-    // ========== 【必须在最前面】为 Scriptable 小组件提供数据接口 ==========
-    if (window.location.search.includes('export=profit')) {
-        const history = JSON.parse(localStorage.getItem('account_profit_history') || '[]');
-        document.body.innerHTML = `<pre>${JSON.stringify(history)}</pre>`;
-        return; // 直接退出，不渲染页面
-    }
-
     /* ── 常量 ── */
     const STORAGE_WATCHLIST = 'fund_watchlist_v2';
     const STORAGE_HOLDINGS = 'fund_holdings';
@@ -160,7 +153,7 @@
         if (typeof toggleThemeRefresh === 'function') toggleThemeRefresh();
     }
 
-    // ===== 暴露到全局，修复浅色模式切换 =====
+    // ===== 修复浅色模式切换 =====
     window.applyTheme = applyTheme;
 
     function initTheme() {
